@@ -55,21 +55,34 @@ class Translator {
         await Translator.loadManualDataSet()
         input = input.toLocaleLowerCase();
 
+        console.log('--------------------------');
+        console.log(`input: ${input}`)
+        let hasDotAtEnd = input[input.length - 1] === "." ? true : false;
+
+        if (hasDotAtEnd) {
+            input = input.trim();
+            input = input.slice(0, input.length - 1);
+        }
+
+        console.log(`has dot at end: ${hasDotAtEnd}`)
+        console.log(`refined input: ${input}`)
+
         const manualTranslation = await Translator.fromManualDataSet(input);
 
         console.log("manualTranslation?", manualTranslation);
 
         if (manualTranslation !== null) {
-            return manualTranslation;
+            return manualTranslation + (hasDotAtEnd ? "." : '');
         }
 
         const googleTranslation = await Translator.fromGoogleAPI(input);
         console.log("googleTranslation?", googleTranslation);
 
-        const parsedTranslation = await Translator.parseGoogleTranslation(googleTranslation);
+        let parsedTranslation = await Translator.parseGoogleTranslation(googleTranslation);
         console.log("parsedTranslation?", parsedTranslation);
 
-        return parsedTranslation;
+        console.log('--------------------------');
+        return parsedTranslation + (hasDotAtEnd ? '.' : '');
     }
 
 }
