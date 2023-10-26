@@ -8,30 +8,52 @@
 	import * as Card from '$lib/components/ui/card';
 	import { debounce } from 'lodash-es';
 	import { Switch } from '$lib/components/ui/switch';
+	import { page } from '$app/stores';
 
 	let input = '';
 	let output = '';
 	let responseOutput = '';
 	let loading = false;
 
+	let options = {
+		autoSummarize: false,
+		pureGujarati: false,
+		autoBulletins: false
+	};
+
 	let textareaHeight = 100;
 
 	function autoResize(event: Event) {
 		const target = event.target as HTMLTextAreaElement;
 
-		textareaHeight = target.scrollHeight;
+		if (target.value === '') {
+			textareaHeight = 100;
+		} else {
+			textareaHeight = target.scrollHeight;
+		}
 	}
 
 	async function translate() {
-		deboundedTranslate.cancel();
+		if (input.trim() === '') {
+			responseOutput = '';
+			return;
+		}
 		responseOutput = '';
 		loading = true;
 		const response = await trpc().translate.query({
-			text: input
+			text: input,
+			autoSummarize: options.autoSummarize,
+			pureGujarati: options.pureGujarati,
+			autoBulletins: options.autoBulletins
 		});
 
 		loading = false;
-		responseOutput = response;
+		if (response.data === null || response.error) {
+			console.error(response.message);
+			return;
+		}
+
+		responseOutput = response.data;
 	}
 
 	$: output = loading === true ? 'Translating...' : responseOutput;
@@ -39,8 +61,8 @@
 	const deboundedTranslate = debounce(translate, 1000);
 </script>
 
-<div class="w-full h-screen flex justify-center gap-6">
-	<div class="container py-20">
+<div class="w-full min-h-full flex flex-col items-center gap-6">
+	<div class="container py-10">
 		<!-- translator wrapper -->
 
 		<div class="flex max-md:flex-col gap-3 items-stretch">
@@ -58,18 +80,18 @@
 					on:input={() => deboundedTranslate()}
 					bind:value={input}
 					style="height: {textareaHeight}px;"
-					class="min-h-[200px] border-black text-xl resize-none"
+					class="min-h-[200px] border-black dark:border-white text-xl resize-none"
 					placeholder="Start typing..."
 				/>
-				<Card.Root class="border-black p-0">
+				<Card.Root class="border-black dark:border-white p-0">
 					<Card.Content class="py-5">
 						<!-- auto bulletins -->
 						<div class="flex justify-between items-center">
-							<div class="flex flex-col flex-grow gap-0.5">
+							<div class="w-fit flex flex-col flex-grow gap-0.5">
 								<h1>Educational Translation</h1>
 							</div>
-							<Switch class="!bg-black" checked={false} />
-							<div class="flex flex-col flex-grow items-end gap-0.5">
+							<Switch class="!bg-black dark:!bg-white mx-3" bind:checked={options.pureGujarati} />
+							<div class="w-fit flex flex-col flex-grow !items-end gap-0.5">
 								<h1>Pure Gujarati Translation</h1>
 							</div>
 						</div>
@@ -82,7 +104,7 @@
 									Tries to present given text in summarized format
 								</p>
 							</div>
-							<Switch checked={true} />
+							<Switch bind:checked={options.autoSummarize} />
 						</div>
 
 						<hr class="my-3" />
@@ -94,7 +116,7 @@
 									Tries to present given text in bulletin format
 								</p>
 							</div>
-							<Switch checked={true} />
+							<Switch bind:checked={options.autoBulletins} />
 						</div>
 
 						<hr class="my-3" />
@@ -110,7 +132,7 @@
 					readonly
 					bind:value={output}
 					style="height: {textareaHeight}px; color: #000;"
-					class="min-h-[200px] border-black text-xl bg-gray-100 resize-none"
+					class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
 				/>
 				{#if false}
 					<Card.Root class="py-0 border-black">

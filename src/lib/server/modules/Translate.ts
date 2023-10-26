@@ -67,7 +67,14 @@ class Translator {
         return text[text.length - 1] === '.' ? text.slice(0, text.length - 1) : text;
     }
 
-    public static async translate(input: string) {
+    public static async translate(input: string, options?: {
+        wordReplacementLayer: boolean
+    }) {
+        options = {
+            wordReplacementLayer: true,
+            ...(options || {}),
+        }
+
         console.log('--------------------');
         console.log("input?", input);
         // 1. Load the model
@@ -85,6 +92,7 @@ class Translator {
 
         // 4. if the input is not paragraph that means input is sentence, check if the sentence exists in sentence-database, if yes just return it
         if (!isParagraph) {
+
             const endWithDot = refinedInput[refinedInput.length - 1] === ".";
 
             const manualTranslation = await Translator.fromManualDataSet(Translator.simplifyText(refinedInput));
@@ -99,11 +107,16 @@ class Translator {
 
             console.log("googleTranslated?", googleTranslated);
 
-            const parsedResult = await Translator.parseResult(googleTranslated);
+            if (options.wordReplacementLayer) {
+                const parsedResult = await Translator.parseResult(googleTranslated);
 
-            console.log("parsedResult?", parsedResult);
+                console.log("parsedResult?", parsedResult);
 
-            return parsedResult + (endWithDot ? '.' : '');
+                return parsedResult + (endWithDot ? '.' : '');
+            } else {
+                return googleTranslated + (endWithDot ? '.' : '');
+            }
+
         }
 
         const sentences = Translator.sentenceGeneratorFromParagraph(refinedInput);
@@ -138,11 +151,15 @@ class Translator {
 
             console.log("googleTranslated?", googleTranslated);
 
-            const parsedResult = await Translator.parseResult(googleTranslated);
+            if (options.wordReplacementLayer) {
+                const parsedResult = await Translator.parseResult(googleTranslated);
 
-            console.log("parsedResult?", parsedResult);
+                console.log("parsedResult?", parsedResult);
 
-            return parsedResult;
+                return parsedResult;
+            }
+
+            return googleTranslated;
         }
 
         return input;
