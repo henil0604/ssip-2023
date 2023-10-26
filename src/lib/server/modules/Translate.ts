@@ -23,7 +23,7 @@ class Translator {
     }
 
     public static async fromManualDataSet(input: string) {
-        await Translator.loadManualDataSet(true);
+        await Translator.loadManualDataSet();
         if (Translator.ManualDataSet === null) return null;
 
         return Translator.ManualDataSet[input] || null;
@@ -35,8 +35,19 @@ class Translator {
         })).text
     }
 
-    public static async parseGoogleTranslation(text: string) {
-        await Translator.loadReplacerDataset(true);
+    public static sentenceGeneratorFromParagraph(input: string) {
+        return input.split(/(?<=[.!?])\s+/);
+    }
+
+    public static isParagraph(input: string) {
+        const sentences = Translator.sentenceGeneratorFromParagraph(input);
+        console.log("sentences?", sentences)
+
+        return sentences.length > 1 ? true : false;
+    }
+
+    public static async parseResult(text: string) {
+        await Translator.loadReplacerDataset();
         if (Translator.ReplacerDataSet === null) return text;
 
         const tokens = text.split(" ");
@@ -51,38 +62,90 @@ class Translator {
         return newTokens.join(' ');
     }
 
+    public static simplifyText(text: string) {
+        text = text.toLocaleLowerCase().trim();
+        return text[text.length - 1] === '.' ? text.slice(0, text.length - 1) : text;
+    }
+
     public static async translate(input: string) {
+        console.log('--------------------');
+        console.log("input?", input);
+        // 1. Load the model
         await Translator.loadManualDataSet()
-        input = input.toLocaleLowerCase();
+        const originalInput = input;
 
-        console.log('--------------------------');
-        console.log(`input: ${input}`)
-        let hasDotAtEnd = input[input.length - 1] === "." ? true : false;
+        // 2. convert input to lowercase (fine tune)
+        let refinedInput = input.toLocaleLowerCase();
+        console.log("refinedInput?", refinedInput);
 
-        if (hasDotAtEnd) {
-            input = input.trim();
-            input = input.slice(0, input.length - 1);
+        // 3. check if input is paragraph or not
+        const isParagraph = Translator.isParagraph(refinedInput);
+
+        console.log("isParagraph?", isParagraph);
+
+        // 4. if the input is not paragraph that means input is sentence, check if the sentence exists in sentence-database, if yes just return it
+        if (!isParagraph) {
+            const endWithDot = refinedInput[refinedInput.length - 1] === ".";
+
+            const manualTranslation = await Translator.fromManualDataSet(Translator.simplifyText(refinedInput));
+
+            console.log("manualTranslation?", manualTranslation);
+            if (manualTranslation) {
+                return manualTranslation + (endWithDot ? '.' : '');
+            }
+
+            // if not found in manual translation, translate it from google API
+            const googleTranslated = await Translator.fromGoogleAPI(refinedInput);
+
+            console.log("googleTranslated?", googleTranslated);
+
+            const parsedResult = await Translator.parseResult(googleTranslated);
+
+            console.log("parsedResult?", parsedResult);
+
+            return parsedResult + (endWithDot ? '.' : '');
         }
 
-        console.log(`has dot at end: ${hasDotAtEnd}`)
-        console.log(`refined input: ${input}`)
+        const sentences = Translator.sentenceGeneratorFromParagraph(refinedInput);
 
-        const manualTranslation = await Translator.fromManualDataSet(input);
+        const sentencesReplaced = await Promise.all(sentences.map(async sentence => {
+            sentence = Translator.simplifyText(sentence);
+            return [sentence, await Translator.fromManualDataSet(sentence)];
+        }))
 
-        console.log("manualTranslation?", manualTranslation);
+        let allTheSentencesIsInManualDatabase = false;
 
-        if (manualTranslation !== null) {
-            return manualTranslation + (hasDotAtEnd ? "." : '');
+        for (const replacement of sentencesReplaced) {
+            if (replacement[1] === null) {
+                allTheSentencesIsInManualDatabase = false;
+                break;
+            }
+            allTheSentencesIsInManualDatabase = true;
         }
 
-        const googleTranslation = await Translator.fromGoogleAPI(input);
-        console.log("googleTranslation?", googleTranslation);
+        console.log("allTheSentencesIsInManualDatabase?", allTheSentencesIsInManualDatabase);
 
-        let parsedTranslation = await Translator.parseGoogleTranslation(googleTranslation);
-        console.log("parsedTranslation?", parsedTranslation);
+        // 5. if the input is paragraph, and all the sentences is in the sentence-database, replace all of them.
+        if (isParagraph && allTheSentencesIsInManualDatabase) {
+            return sentencesReplaced.map(replacement => {
+                return replacement[1];
+            }).join(". ");
+        }
 
-        console.log('--------------------------');
-        return parsedTranslation + (hasDotAtEnd ? '.' : '');
+        // 6. if the input is paragraph, and few sentences is not in sentence-database, just go to google API
+        if (isParagraph && !allTheSentencesIsInManualDatabase) {
+            const googleTranslated = await Translator.fromGoogleAPI(refinedInput);
+
+            console.log("googleTranslated?", googleTranslated);
+
+            const parsedResult = await Translator.parseResult(googleTranslated);
+
+            console.log("parsedResult?", parsedResult);
+
+            return parsedResult;
+        }
+
+        return input;
     }
 
 }

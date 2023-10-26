@@ -6,10 +6,7 @@ export const router = t.router({
     translate: publicProcedure.input(z.object({
         text: z.string()
     })).query(async ({ ctx, input }) => {
-        const sentences = input.text.split("\n");
-        const translation = (await Promise.all(sentences.map(Translator.translate))).join('\n');
-
-        return translation;
+        return await Translator.translate(input.text);
     })
 });
 
