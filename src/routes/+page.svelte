@@ -65,7 +65,7 @@
 	<div class="container py-10">
 		<!-- translator wrapper -->
 
-		<div class="flex max-md:flex-col gap-3 items-stretch">
+		<div class="flex max-md:flex-col gap-7 items-stretch">
 			<!-- english -->
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
 				<Label>English</Label>
@@ -83,6 +83,7 @@
 					class="min-h-[200px] border-black dark:border-white text-xl resize-none"
 					placeholder="Start typing..."
 				/>
+				<div class="my-2" />
 				<Card.Root class="border-black dark:border-white p-0">
 					<Card.Content class="py-5">
 						<!-- auto bulletins -->
