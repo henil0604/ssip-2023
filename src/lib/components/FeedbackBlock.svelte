@@ -5,6 +5,7 @@
 	import Icon from '@iconify/svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
+	import { trpc } from '$lib/trpc/client';
 
 	export let refId: string;
 	let show = true;
@@ -27,13 +28,27 @@
 		}
 	}
 
-	function handleSubmit() {
-		console.log('hi');
+	async function handleSubmit() {
+		console.log(`refId: ${refId}`);
+
+		const response = await trpc().submitFeedback.query({
+			refId,
+			isPositive: answer === 'positive',
+			isGrammarError,
+			isSpellingError,
+			isTranslationError
+		});
+
+		console.log('response?', response);
+
 		hasNegativeReviewSubmitted = true;
+		setTimeout(() => {
+			show = false;
+		}, 3000);
 	}
 </script>
 
-{#if show}
+{#if show && refId}
 	<div in:fade out:fade data-ref-id={refId}>
 		<Card.Root
 			class="py-0 border-black {answer && answer === 'positive'
@@ -54,6 +69,7 @@
 							class="text-green-800 border-green-800 gap-2 hover:bg-green-100"
 							on:click={() => {
 								setAnswer('positive');
+								handleSubmit();
 							}}
 						>
 							<Icon icon="octicon:thumbsup-16" />
@@ -80,12 +96,24 @@
 
 				{#if answer && answer === 'negative' && !hasNegativeReviewSubmitted}
 					<div class="flex flex-col w-full h-fit gap-2">
-						<div class="font-semibold">Describe the problem</div>
+						<div class="font-semibold flex items-center gap-1">
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<!-- svelte-ignore a11y-no-static-element-interactions -->
+							<div
+								on:click={() => {
+									answer = null;
+								}}
+								class="cursor-pointer"
+							>
+								<Icon icon="mingcute:left-fill" class="text-lg" />
+							</div>
+							Describe the problem
+						</div>
 						<div class="my-1" />
 						<div class="flex items-center space-x-2">
-							<Checkbox id="terms" bind:checked={isTranslationError} />
+							<Checkbox id="isTranslationError" bind:checked={isTranslationError} />
 							<Label
-								for="terms"
+								for="isTranslationError"
 								class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 							>
 								Translation Error - <span class="text-muted-foreground"
@@ -94,9 +122,9 @@
 							</Label>
 						</div>
 						<div class="flex items-center space-x-2">
-							<Checkbox id="terms" bind:checked={isGrammarError} />
+							<Checkbox id="isGrammarError" bind:checked={isGrammarError} />
 							<Label
-								for="terms"
+								for="isGrammarError"
 								class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 							>
 								Grammar Error - <span class="text-muted-foreground"
@@ -105,9 +133,9 @@
 							</Label>
 						</div>
 						<div class="flex items-center space-x-2">
-							<Checkbox id="terms" bind:checked={isSpellingError} />
+							<Checkbox id="isSpellingError" bind:checked={isSpellingError} />
 							<Label
-								for="terms"
+								for="isSpellingError"
 								class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 							>
 								Spelling Error - <span class="text-muted-foreground font-medium"

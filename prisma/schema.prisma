@@ -11,7 +11,7 @@ datasource db {
 }
 
 model History {
-  id String @id @map("_id")
+  id String @id @default(cuid()) @map("_id")
 
   input  String
   output String
@@ -22,7 +22,7 @@ model History {
 }
 
 model Feedback {
-  id String @id @map("_id")
+  id String @id @default(cuid()) @map("_id")
 
   ref   History @relation(fields: [refId], references: [id])
   refId String

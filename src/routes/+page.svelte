@@ -56,7 +56,7 @@
 		}
 
 		responseOutput = response.data;
-		refId = response.refId;
+		refId = response.refId || null;
 	}
 
 	$: output = loading === true ? 'Translating...' : responseOutput;

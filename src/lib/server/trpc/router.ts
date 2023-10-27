@@ -69,6 +69,30 @@ export const router = t.router({
             data: translation,
             refId: referenceId
         };
+    }),
+
+    submitFeedback: publicProcedure.input(z.object({
+        refId: z.string(),
+        isPositive: z.boolean(),
+        isTranslationError: z.boolean(),
+        isGrammarError: z.boolean(),
+        isSpellingError: z.boolean(),
+    })).query(async ({ ctx, input }) => {
+
+        return prisma.feedback.create({
+            data: {
+                isGrammarError: !input.isPositive && input.isGrammarError,
+                isSpellingError: !input.isPositive && input.isSpellingError,
+                isTranslationError: !input.isPositive && input.isTranslationError,
+                isPositive: input.isPositive,
+                ref: {
+                    connect: {
+                        id: input.refId
+                    }
+                }
+            }
+        })
+
     })
 });
 
