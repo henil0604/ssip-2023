@@ -8,12 +8,14 @@
 	import * as Card from '$lib/components/ui/card';
 	import { debounce } from 'lodash-es';
 	import { Switch } from '$lib/components/ui/switch';
-	import { page } from '$app/stores';
+	import FeedbackBlock from '$lib/components/FeedbackBlock.svelte';
+	import { copyTextToClipboard } from '$lib/utils';
 
 	let input = '';
 	let output = '';
 	let responseOutput = '';
 	let loading = false;
+	let refId: string | null = null;
 
 	let options = {
 		autoSummarize: false,
@@ -54,6 +56,7 @@
 		}
 
 		responseOutput = response.data;
+		refId = response.refId;
 	}
 
 	$: output = loading === true ? 'Translating...' : responseOutput;
@@ -69,39 +72,63 @@
 			<!-- english -->
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
 				<Label>English</Label>
-				<Textarea
-					on:input={autoResize}
-					on:keydown={(e) => {
-						if (e.keyCode === 13) {
-							e.preventDefault();
-							translate();
-						}
-					}}
-					on:input={() => deboundedTranslate()}
-					bind:value={input}
-					style="height: {textareaHeight}px;"
-					class="min-h-[200px] border-black dark:border-white text-xl resize-none"
-					placeholder="Start typing..."
-				/>
+				<div class="relative">
+					<Textarea
+						on:input={autoResize}
+						on:keydown={(e) => {
+							if (e.keyCode === 13) {
+								e.preventDefault();
+								translate();
+							}
+						}}
+						on:input={() => deboundedTranslate()}
+						bind:value={input}
+						style="height: {textareaHeight}px;"
+						class="min-h-[200px] border-black dark:border-white text-xl resize-none"
+						placeholder="Start typing..."
+					/>
+
+					<div class="absolute bottom-2 right-1">
+						<Button
+							size="sm"
+							variant="ghost"
+							class="bg-transparent opacity-60 hover:opacity-100 transition-all"
+							on:click={() => copyTextToClipboard(input)}
+						>
+							<Icon icon="basil:copy-solid" class="text-xl" />
+						</Button>
+					</div>
+				</div>
 				<div class="my-2" />
 				<Card.Root class="border-black dark:border-white p-0">
 					<Card.Content class="py-5">
 						<!-- auto bulletins -->
-						<div class="flex justify-between items-center">
-							<div class="w-fit flex flex-col flex-grow gap-0.5">
-								<h1>Educational Translation</h1>
-							</div>
-							<Switch class="!bg-black dark:!bg-white mx-3" bind:checked={options.pureGujarati} />
-							<div class="w-fit flex flex-col flex-grow !items-end gap-0.5">
-								<h1>Pure Gujarati Translation</h1>
-							</div>
+						<div
+							class="flex max-md:flex-col justify-between w-full gap-1 bg-gray-100 dark:bg-zinc-700 px-1 py-1 rounded-md"
+						>
+							<Button
+								variant="outline"
+								class="flex-grow border-gray-500 {options.pureGujarati === false
+									? 'bg-gray-900 text-white hover:bg-gray-900 hover:text-white dark:bg-background dark:border-none'
+									: 'bg-transparent text-muted-foreground hover:bg-white dark:border-none dark:hover:bg-zinc-600'}"
+								on:click={() => (options.pureGujarati = false)}
+								size="sm">Educational Translation</Button
+							>
+							<Button
+								variant="outline"
+								class="flex-grow border-gray-500 {options.pureGujarati === true
+									? 'bg-gray-900 text-white hover:bg-gray-900 hover:text-white dark:bg-background dark:border-none'
+									: 'bg-transparent text-muted-foreground hover:bg-white dark:border-none dark:hover:bg-zinc-600'}"
+								on:click={() => (options.pureGujarati = true)}
+								size="sm">Pure Gujarati Translation</Button
+							>
 						</div>
 						<hr class="my-3" />
 						<!-- auto summarize -->
 						<div class="flex justify-between items-center">
 							<div class="flex flex-col flex-grow gap-0.5">
 								<h1>Auto Summarize</h1>
-								<p class="text-muted-foreground text-sm">
+								<p class="text-muted-foreground text-sm font-medium">
 									Tries to present given text in summarized format
 								</p>
 							</div>
@@ -113,7 +140,7 @@
 						<div class="flex justify-between items-center">
 							<div class="flex flex-col flex-grow gap-0.5">
 								<h1>Auto Bulletins</h1>
-								<p class="text-muted-foreground text-sm">
+								<p class="text-muted-foreground text-sm font-medium">
 									Tries to present given text in bulletin format
 								</p>
 							</div>
@@ -128,19 +155,28 @@
 			<!-- gujarati -->
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
 				<Label>Gujarati</Label>
-				<Textarea
-					on:input={autoResize}
-					readonly
-					bind:value={output}
-					style="height: {textareaHeight}px; color: #000;"
-					class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
-				/>
-				{#if false}
-					<Card.Root class="py-0 border-black">
-						<Card.Content class="py-3">
-							<!--  -->
-						</Card.Content>
-					</Card.Root>
+				<div class="relative">
+					<Textarea
+						on:input={autoResize}
+						readonly
+						bind:value={output}
+						style="height: {textareaHeight}px; color: #000;"
+						class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
+					/>
+					<div class="absolute bottom-2 right-1">
+						<Button
+							size="sm"
+							variant="ghost"
+							class="bg-transparent opacity-60 hover:opacity-100 transition-all"
+							on:click={() => copyTextToClipboard(output)}
+						>
+							<Icon icon="basil:copy-solid" class="text-xl" />
+						</Button>
+					</div>
+				</div>
+				<div class="my-2" />
+				{#if responseOutput && !loading && refId}
+					<FeedbackBlock {refId} />
 				{/if}
 			</div>
 		</div>

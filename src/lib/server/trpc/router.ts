@@ -2,6 +2,8 @@ import { publicProcedure, t } from "$lib/server/trpc";
 import { z } from 'zod';
 import Translator from "$lib/server/modules/Translate";
 import OpenAPI from "$lib/server/modules/OpenAPI";
+import generateId from "$lib/server/modules/generateId";
+import { prisma } from "$lib/server/db";
 
 export const router = t.router({
     translate: publicProcedure.input(z.object({
@@ -11,13 +13,18 @@ export const router = t.router({
         autoBulletins: z.boolean()
     })).query(async ({ ctx, input }) => {
 
+        const referenceId = generateId();
+
+        console.log("referenceId?", referenceId);
+
         if (input.autoSummarize) {
             const summarizedContent = await OpenAPI.Summarize(input.text);
             if (!summarizedContent) {
                 return {
                     error: true,
                     message: 'Invalid input',
-                    data: null
+                    data: null,
+                    refId: null
                 }
             }
 
@@ -25,7 +32,8 @@ export const router = t.router({
         }
 
         let translation = await Translator.translate(input.text, {
-            wordReplacementLayer: !input.pureGujarati
+            wordReplacementLayer: !input.pureGujarati,
+            sentenceReplacementLayer: !input.pureGujarati,
         });
 
 
@@ -36,18 +44,30 @@ export const router = t.router({
                 return {
                     error: true,
                     message: 'Invalid input',
-                    data: null
+                    data: null,
+                    refId: null
                 }
             }
 
             translation = bulletinedContent.trim();
         }
 
+        // Store into history table
+        if (!input.autoBulletins && !input.autoSummarize && !input.pureGujarati) {
+            await prisma.history.create({
+                data: {
+                    id: referenceId,
+                    input: input.text,
+                    output: translation,
+                }
+            })
+        }
 
         return {
             error: false,
             message: null,
-            data: translation
+            data: translation,
+            refId: referenceId
         };
     })
 });

@@ -68,10 +68,12 @@ class Translator {
     }
 
     public static async translate(input: string, options?: {
-        wordReplacementLayer: boolean
+        wordReplacementLayer: boolean,
+        sentenceReplacementLayer: boolean
     }) {
         options = {
             wordReplacementLayer: true,
+            sentenceReplacementLayer: true,
             ...(options || {}),
         }
 
@@ -95,11 +97,13 @@ class Translator {
 
             const endWithDot = refinedInput[refinedInput.length - 1] === ".";
 
-            const manualTranslation = await Translator.fromManualDataSet(Translator.simplifyText(refinedInput));
+            if (options.sentenceReplacementLayer) {
+                const manualTranslation = await Translator.fromManualDataSet(Translator.simplifyText(refinedInput));
 
-            console.log("manualTranslation?", manualTranslation);
-            if (manualTranslation) {
-                return manualTranslation + (endWithDot ? '.' : '');
+                console.log("manualTranslation?", manualTranslation);
+                if (manualTranslation) {
+                    return manualTranslation + (endWithDot ? '.' : '');
+                }
             }
 
             // if not found in manual translation, translate it from google API
