@@ -11,7 +11,7 @@
 <div class="w-full h-fit px-5 py-3 flex">
 	<!-- head -->
 	<div>
-		<h1 class="text-xl font-extrabold">Varnantar</h1>
+		<h1 class="text-xl font-extrabold text-orange-600">Varnantar</h1>
 	</div>
 
 	<!-- body -->

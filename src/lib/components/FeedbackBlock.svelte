@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import Icon from '@iconify/svelte';
@@ -24,7 +24,7 @@
 		if (answer === 'positive') {
 			setTimeout(() => {
 				show = false;
-			}, 3000);
+			}, 1500);
 		}
 	}
 
@@ -44,12 +44,12 @@
 		hasNegativeReviewSubmitted = true;
 		setTimeout(() => {
 			show = false;
-		}, 3000);
+		}, 1500);
 	}
 </script>
 
 {#if show && refId}
-	<div in:fade out:fade data-ref-id={refId}>
+	<div in:fly={{ y: 50 }} out:fly={{ y: 50 }} data-ref-id={refId}>
 		<Card.Root
 			class="py-0 border-black {answer && answer === 'positive'
 				? 'bg-green-100'
@@ -66,7 +66,7 @@
 					<div class="grid grid-cols-2 w-full my-2 gap-2">
 						<Button
 							variant="outline"
-							class="text-green-800 border-green-800 gap-2 hover:bg-green-100"
+							class="text-green-800 border-green-800 gap-2 hover:bg-green-100 dark:hover:bg-green-700"
 							on:click={() => {
 								setAnswer('positive');
 								handleSubmit();
@@ -80,7 +80,7 @@
 							on:click={() => {
 								setAnswer('negative');
 							}}
-							class="text-red-800 border-red-800 gap-2 hover:bg-red-100"
+							class="text-red-800 border-red-800 gap-2 hover:bg-red-100 dark:hover:bg-red-700"
 						>
 							<Icon icon="octicon:thumbsdown-16" />
 							Bad

@@ -24,15 +24,15 @@
 <div class="w-full min-h-full flex flex-col gap-6">
 	<div class="container">
 		<div class="text-muted-foreground font-semibold">
-			Enter question in English and get Solution in Gujarati...
+			Enter any text in English and get questions extracted in Gujarati...
 		</div>
 		<div class="my-7" />
 		<!-- translator wrapper -->
 
 		<div class="flex flex-col gap-4 items-stretch">
-			<!-- question -->
+			<!-- text -->
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
-				<Label>Question</Label>
+				<Label>Text</Label>
 				<div class="relative">
 					<Textarea
 						on:keydown={(e) => {
@@ -44,7 +44,7 @@
 						on:input={autoResize}
 						style="height: {textareaHeight}px;"
 						class="min-h-[200px] border-black dark:border-white text-xl resize-none"
-						placeholder="Enter a question..."
+						placeholder="Enter text..."
 					/>
 
 					<div class="absolute bottom-2 right-1">
@@ -60,13 +60,14 @@
 			</div>
 
 			<div class="w-full flex items-center justify-center">
-				<Button on:click={generateSolution} size="sm" class="rounded-full">Generate Solution</Button
+				<Button on:click={generateSolution} size="sm" class="rounded-full"
+					>Generate Questions</Button
 				>
 			</div>
 
 			<!-- solution -->
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
-				<Label>Solution</Label>
+				<Label>Extracted questions</Label>
 				<div class="relative">
 					<Textarea
 						on:input={autoResize}
@@ -91,7 +92,7 @@
 				<div
 					class="shadow-xl rounded-full border border-black dark:border-white px-5 py-1 flex gap-2 min-w-fit items-center"
 				>
-					<div class="min-w-fit">Is this solution accurate?</div>
+					<div class="min-w-fit">Is this result accurate?</div>
 					<div class="grid grid-cols-2 w-full my-2">
 						<Button
 							variant="outline"
