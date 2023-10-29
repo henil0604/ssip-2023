@@ -14,7 +14,6 @@
 		"prepare": "npm run db:generate"
 	},
 	"devDependencies": {
-		"@auth/prisma-adapter": "^1.0.1",
 		"@iconify/svelte": "^3.1.4",
 		"@prisma/client": "^5.0.0",
 		"@rollup/plugin-typescript": "^11.1.5",
@@ -44,8 +43,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@auth/core": "^0.10.0",
-		"@auth/sveltekit": "^0.3.6",
 		"@iamtraction/google-translate": "^2.0.1",
 		"@trpc/client": "^10.35.0",
 		"@trpc/server": "^10.35.0",
