@@ -1,5 +1,5 @@
 import { OPEN_AI_API_KEY, OPEN_AI_ORGANIZATION_ID } from "$env/static/private";
-import OpenAI from "openai";
+import OpenAI, { OpenAIError } from "openai";
 
 class OpenAPI {
 
@@ -34,6 +34,23 @@ class OpenAPI {
         const response = await OpenAPI.ai.completions.create({
             model: 'text-davinci-003',
             prompt: `Transform the text into bullet points without altering content, tone, or omitting/adding details. start with "•". \nText: ${text}\nAnswer:`,
+            temperature: 1,
+            top_p: 1,
+            max_tokens: 2048,
+            best_of: 1,
+            frequency_penalty: 0,
+            presence_penalty: 0
+        })
+
+        return response.choices[0].text;
+    }
+
+    public static async generateQuestions(text: string) {
+        if (text.trim() === '') return null;
+
+        const response = await OpenAPI.ai.completions.create({
+            model: 'text-davinci-003',
+            prompt: `Generate questions from the paragraph without redundancy or duplication.\ntext: ${text}\nQuestions:\n`,
             temperature: 1,
             top_p: 1,
             max_tokens: 2048,

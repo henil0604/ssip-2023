@@ -40,6 +40,7 @@
 			responseOutput = '';
 			return;
 		}
+		if (loading) return;
 		responseOutput = '';
 		loading = true;
 		const response = await trpc().translate.query({

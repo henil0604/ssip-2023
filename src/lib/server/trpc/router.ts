@@ -59,6 +59,7 @@ export const router = t.router({
                     id: referenceId,
                     input: input.text,
                     output: translation,
+                    type: 'TRANSLTION'
                 }
             })
         }
@@ -93,7 +94,51 @@ export const router = t.router({
             }
         })
 
+    }),
+
+    generateQuestions: publicProcedure.input(z.object({
+        text: z.string()
+    })).query(async ({ ctx, input }) => {
+
+        const referenceId = generateId();
+
+        console.log("referenceId?", referenceId);
+
+        const questions = await OpenAPI.generateQuestions(input.text);
+
+        console.log("questions?", questions);
+
+        if (!questions) {
+            return {
+                error: true,
+                message: 'Invalid input',
+                data: null,
+                refId: null
+            }
+        }
+
+        const translation = await Translator.translate(questions, {
+            sentenceReplacementLayer: true,
+            wordReplacementLayer: true
+        })
+
+        await prisma.history.create({
+            data: {
+                id: referenceId,
+                input: input.text,
+                output: translation,
+                type: 'QUESTION_GENERATOR'
+            }
+        })
+
+        return {
+            data: translation,
+            error: false,
+            message: null,
+            refId: referenceId
+        }
     })
+
 });
 
 export type Router = typeof router;

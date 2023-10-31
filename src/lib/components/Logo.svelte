@@ -1,13 +1,6 @@
-<script lang="ts">
-	// export let scale = 0.001;
-	export let width = 100;
-	export let height = 100;
-</script>
-
 <svg
 	viewBox="0 0 391 88"
 	preserveAspectRatio="none"
-	width="auto"
 	height="35"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"

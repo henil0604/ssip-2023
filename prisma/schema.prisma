@@ -16,6 +16,8 @@ model History {
   input  String
   output String
 
+  type HistoryType @default(TRANSLTION)
+
   createdAt DateTime @default(now())
 
   feedbacks Feedback[]
@@ -34,4 +36,10 @@ model Feedback {
   isTranslationError Boolean
 
   createdAt DateTime @default(now())
+}
+
+enum HistoryType {
+  TRANSLTION
+  QUESTION_GENERATOR
+  SOLUTION_GENERATOR
 }
