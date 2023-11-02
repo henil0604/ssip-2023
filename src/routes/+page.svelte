@@ -9,6 +9,7 @@
 	import { Switch } from '$lib/components/ui/switch';
 	import FeedbackBlock from '$lib/components/FeedbackBlock.svelte';
 	import { copyTextToClipboard } from '$lib/utils';
+	import CopyButton from '$lib/components/CopyButton.svelte';
 
 	// input field binder
 	let input = '';
@@ -118,14 +119,7 @@
 					/>
 
 					<div class="absolute bottom-2 right-1">
-						<Button
-							size="sm"
-							variant="ghost"
-							class="bg-transparent opacity-60 hover:opacity-100 transition-all"
-							on:click={() => copyTextToClipboard(input)}
-						>
-							<Icon icon="basil:copy-solid" class="text-xl" />
-						</Button>
+						<CopyButton bind:input />
 					</div>
 				</div>
 				<div class="my-2" />
@@ -195,14 +189,7 @@
 						class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
 					/>
 					<div class="absolute bottom-2 right-1">
-						<Button
-							size="sm"
-							variant="ghost"
-							class="bg-transparent opacity-60 hover:opacity-100 transition-all"
-							on:click={() => copyTextToClipboard(output)}
-						>
-							<Icon icon="basil:copy-solid" class="text-xl" />
-						</Button>
+						<CopyButton bind:input={output} />
 					</div>
 				</div>
 				<div class="my-2" />

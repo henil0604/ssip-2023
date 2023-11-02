@@ -4,6 +4,8 @@
 
 // importing google translate API
 import translate from '@iamtraction/google-translate';
+import { text } from '@sveltejs/kit';
+import { Regex } from 'lucide-svelte';
 
 class Translator {
     // static manual dataset
@@ -77,20 +79,13 @@ class Translator {
         // some guard
         if (Translator.ReplacerDataSet === null) return text;
 
-        // splitting everything with space
-        const tokens = text.split(" ");
+        for (const key in Translator.ReplacerDataSet!) {
+            const replacedValue = Translator.ReplacerDataSet![key];
 
-        // iterating through all tokens
-        const newTokens = tokens.map(e => {
-            // if the replacer-dataset has the word, replace it
-            if (Translator.ReplacerDataSet![e]) {
-                return Translator.ReplacerDataSet![e];
-            }
-            return e;
-        })
+            text = text.replace(new RegExp(key, "g"), replacedValue);
+        }
 
-        // returning parsed result
-        return newTokens.join(' ');
+        return text;
     }
 
     // responsible for normalizing the text, it tries to remove dot from sentence, it lowercases the text and trims unwanted spaces.
