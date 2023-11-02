@@ -1,8 +1,15 @@
+/**
+ * this module is responsible for handling all methods related to OpenAI API
+ */
+
+// import OpenAI API key and Organization Id
 import { OPEN_AI_API_KEY, OPEN_AI_ORGANIZATION_ID } from "$env/static/private";
-import OpenAI, { OpenAIError } from "openai";
+// import OpenAI SDK
+import OpenAI from "openai";
 
 class OpenAPI {
 
+    // initiate OpenAI instance
     private static ai = new OpenAI({
         organization: OPEN_AI_ORGANIZATION_ID,
         apiKey: OPEN_AI_API_KEY
@@ -10,7 +17,9 @@ class OpenAPI {
 
     private constructor() { }
 
-
+    /**
+     * summarizes the given text
+     */
     public static async Summarize(text: string) {
         if (text.trim() === '') return null;
 
@@ -28,6 +37,9 @@ class OpenAPI {
         return response.choices[0].text;
     }
 
+    /**
+     * generates bulletins from input text
+     */
     public static async bulletins(text: string) {
         if (text.trim() === '') return null;
 
@@ -45,6 +57,9 @@ class OpenAPI {
         return response.choices[0].text;
     }
 
+    /*
+        generates questions from given input
+    */
     public static async generateQuestions(text: string) {
         if (text.trim() === '') return null;
 

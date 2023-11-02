@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fade, fly } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
 	import Icon from '@iconify/svelte';
@@ -8,29 +8,40 @@
 	import { trpc } from '$lib/trpc/client';
 
 	export let refId: string;
+
 	let show = true;
 
 	type Answer = 'positive' | 'negative' | null;
 
 	let answer: Answer = null;
 
+	// binders
 	let isTranslationError = false;
 	let isGrammarError = false;
 	let isSpellingError = false;
 	let hasNegativeReviewSubmitted = false;
 
+	// responsible for setting answer
 	function setAnswer(value: Answer) {
 		answer = value;
+		// if the value is 'positive', call the hide function
 		if (answer === 'positive') {
-			setTimeout(() => {
-				show = false;
-			}, 1500);
+			hide();
 		}
 	}
 
+	// responsible for hiding the block after a delay
+	function hide() {
+		setTimeout(() => {
+			show = false;
+		}, 1500);
+	}
+
+	// responsible for doing RPC for feedback
 	async function handleSubmit() {
 		console.log(`refId: ${refId}`);
 
+		// RPC
 		const response = await trpc().submitFeedback.query({
 			refId,
 			isPositive: answer === 'positive',
@@ -39,12 +50,11 @@
 			isTranslationError
 		});
 
+		// debugging response
 		console.log('response?', response);
 
 		hasNegativeReviewSubmitted = true;
-		setTimeout(() => {
-			show = false;
-		}, 1500);
+		hide();
 	}
 </script>
 

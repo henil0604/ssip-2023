@@ -7,6 +7,7 @@
 	let show = true;
 	export let refId: string;
 
+	// responsible for RPC
 	async function submitFeedback(isPositive: boolean) {
 		console.log(`refId: ${refId}`);
 		show = false;

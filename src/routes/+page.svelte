@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { trpc } from '$lib/trpc/client';
@@ -11,38 +10,61 @@
 	import FeedbackBlock from '$lib/components/FeedbackBlock.svelte';
 	import { copyTextToClipboard } from '$lib/utils';
 
+	// input field binder
 	let input = '';
+	// output field binder
 	let output = '';
+	// the response coming from RPC call
 	let responseOutput = '';
+	// if the translation function is on-going
 	let loading = false;
+	// history block reference id
 	let refId: string | null = null;
 
+	// options binder
 	let options = {
 		autoSummarize: false,
 		pureGujarati: false,
 		autoBulletins: false
 	};
 
+	// textarea height binder
 	let textareaHeight = 100;
 
+	/**
+	 * this function is called when on:input method is called in textarea
+	 */
 	function autoResize(event: Event) {
+		// extract the target element
 		const target = event.target as HTMLTextAreaElement;
 
+		// if the value is null, go to default
 		if (target.value === '') {
 			textareaHeight = 100;
 		} else {
+			// find exact minimum height of textarea
 			textareaHeight = target.scrollHeight;
 		}
 	}
 
+	/**
+	 * The function is responsible for handling RPC
+	 */
 	async function translate() {
+		// if the input is empty, responseOutput is set to empty string
 		if (input.trim() === '') {
 			responseOutput = '';
 			return;
 		}
+		// if already loading, don't do anything
 		if (loading) return;
+
 		responseOutput = '';
+
+		// set loading to true
 		loading = true;
+
+		// RPC
 		const response = await trpc().translate.query({
 			text: input,
 			autoSummarize: options.autoSummarize,
@@ -51,8 +73,12 @@
 		});
 
 		loading = false;
+
+		// if the response has error as `true` or the data is null
 		if (response.data === null || response.error) {
+			// console the error
 			console.error(response.message);
+			// return immediately from function
 			return;
 		}
 
@@ -60,9 +86,11 @@
 		refId = response.refId || null;
 	}
 
-	$: output = loading === true ? 'Translating...' : responseOutput;
+	// this debounce is responsible for managing all the on:input events in input textarea
+	const deboundedTranslate = debounce(translate, 1000 /* 1 second */);
 
-	const deboundedTranslate = debounce(translate, 1000);
+	// observing loading and responseOutput
+	$: output = loading === true ? 'Translating...' : responseOutput;
 </script>
 
 <div class="w-full min-h-full flex flex-col items-center gap-6">
@@ -101,6 +129,7 @@
 					</div>
 				</div>
 				<div class="my-2" />
+				<!-- options card -->
 				<Card.Root class="border-black dark:border-white p-0">
 					<Card.Content class="py-5">
 						<!-- auto bulletins -->
@@ -109,7 +138,7 @@
 						>
 							<Button
 								variant="outline"
-								class="flex-grow border-gray-500 {options.pureGujarati === false
+								class="flex-grow border-gray-800 {options.pureGujarati === false
 									? 'bg-gray-900 text-white hover:bg-gray-900 hover:text-white dark:bg-background dark:border-none'
 									: 'bg-transparent text-muted-foreground hover:bg-white dark:border-none dark:hover:bg-zinc-600'}"
 								on:click={() => (options.pureGujarati = false)}
@@ -117,7 +146,7 @@
 							>
 							<Button
 								variant="outline"
-								class="flex-grow border-gray-500 {options.pureGujarati === true
+								class="flex-grow border-gray-800 {options.pureGujarati === true
 									? 'bg-gray-900 text-white hover:bg-gray-900 hover:text-white dark:bg-background dark:border-none'
 									: 'bg-transparent text-muted-foreground hover:bg-white dark:border-none dark:hover:bg-zinc-600'}"
 								on:click={() => (options.pureGujarati = true)}
@@ -125,6 +154,7 @@
 							>
 						</div>
 						<hr class="my-3" />
+
 						<!-- auto summarize -->
 						<div class="flex justify-between items-center">
 							<div class="flex flex-col flex-grow gap-0.5">
@@ -135,8 +165,8 @@
 							</div>
 							<Switch bind:checked={options.autoSummarize} />
 						</div>
-
 						<hr class="my-3" />
+
 						<!-- auto bulletins -->
 						<div class="flex justify-between items-center">
 							<div class="flex flex-col flex-grow gap-0.5">
