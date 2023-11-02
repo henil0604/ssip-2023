@@ -57,7 +57,7 @@ class Translator {
     /**
      * checks if the given string is paragraph
      * it basically uses `static sentenceGeneratorFromParagraph` method to get sentences from paragraph,
-     * if the length of array is greater than 1, it returns 1 otherwise false.
+     * if the length of array is greater than 1, it returns true otherwise false.
     **/
     public static isParagraph(input: string) {
         const sentences = Translator.sentenceGeneratorFromParagraph(input);
