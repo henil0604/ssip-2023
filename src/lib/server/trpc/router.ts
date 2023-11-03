@@ -137,7 +137,51 @@ export const router = t.router({
             message: null,
             refId: referenceId
         }
-    })
+    }),
+
+
+    generateSolution: publicProcedure.input(z.object({
+        text: z.string()
+    })).query(async ({ ctx, input }) => {
+
+        const referenceId = generateId();
+
+        console.log("referenceId?", referenceId);
+
+        const solution = await Translator.fromSolutionDataSet(input.text);
+
+        console.log("solution?", solution);
+
+        if (!solution) {
+            return {
+                error: true,
+                message: 'No Solution found',
+                data: null,
+                refId: null
+            }
+        }
+
+        const translation = await Translator.translate(solution, {
+            sentenceReplacementLayer: true,
+            wordReplacementLayer: true
+        })
+
+        await prisma.history.create({
+            data: {
+                id: referenceId,
+                input: input.text,
+                output: translation,
+                type: 'SOLUTION_GENERATOR'
+            }
+        })
+
+        return {
+            data: translation,
+            error: false,
+            message: null,
+            refId: referenceId
+        }
+    }),
 
 });
 

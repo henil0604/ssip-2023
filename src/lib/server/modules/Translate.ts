@@ -4,8 +4,6 @@
 
 // importing google translate API
 import translate from '@iamtraction/google-translate';
-import { text } from '@sveltejs/kit';
-import { Regex } from 'lucide-svelte';
 
 class Translator {
     // static manual dataset
@@ -14,6 +12,9 @@ class Translator {
     } | null = null
     // static replacer dataset
     public static ReplacerDataSet: {
+        [key: string]: string
+    } | null = null
+    public static SolutionDataSet: {
         [key: string]: string
     } | null = null
 
@@ -33,6 +34,13 @@ class Translator {
         }
     }
 
+    // responsible for loading solution dataset into static `SolutionDataSet`
+    public static async loadSolutionDataset(force: boolean = false) {
+        if (Translator.SolutionDataSet === null || force) {
+            Translator.SolutionDataSet = (await import("$lib/server/solution-dataset.json")).default;
+        }
+    }
+
     /**
      * this method implements first layer (sentence replacer layer)
      * responsible for finding value of key in ManualDataSet, if found returns it, if not returns null
@@ -42,6 +50,17 @@ class Translator {
         if (Translator.ManualDataSet === null) return null;
 
         return Translator.ManualDataSet[input] || null;
+    }
+
+    /**
+     * responsible for finding value of key in SolutionDataSet, if found returns it, if not returns null
+    */
+    public static async fromSolutionDataSet(input: string) {
+        await Translator.loadSolutionDataset();
+
+        if (Translator.SolutionDataSet === null) return null;
+
+        return Translator.SolutionDataSet[input] || null;
     }
 
     // responsible for fetching translation from Google Translate API
