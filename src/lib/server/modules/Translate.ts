@@ -1,6 +1,6 @@
 /**
  * This module is responsible for handling all kind of process related to translation.
- */
+*/
 
 // importing google translate API
 import translate from '@iamtraction/google-translate';
@@ -23,6 +23,7 @@ class Translator {
     // responsible for loading manual dataset into static `ManualDataSet`
     public static async loadManualDataSet(force: boolean = false) {
         if (Translator.ManualDataSet === null || force) {
+            console.log("Loading sentence dataset...");
             Translator.ManualDataSet = (await import("$lib/server/sentence-dataset.json")).default;
         }
     }
@@ -30,6 +31,7 @@ class Translator {
     // responsible for loading replacer dataset into static `ReplacerDataSet`
     public static async loadReplacerDataset(force: boolean = false) {
         if (Translator.ReplacerDataSet === null || force) {
+            console.log("Loading replacer dataset...");
             Translator.ReplacerDataSet = (await import("$lib/server/replacer-dataset.json")).default;
         }
     }
@@ -37,6 +39,7 @@ class Translator {
     // responsible for loading solution dataset into static `SolutionDataSet`
     public static async loadSolutionDataset(force: boolean = false) {
         if (Translator.SolutionDataSet === null || force) {
+            console.log("Loading solution dataset...");
             Translator.SolutionDataSet = (await import("$lib/server/solution-dataset.json")).default;
         }
     }
@@ -128,7 +131,8 @@ class Translator {
         console.log('--------------------');
         console.log("input?", input);
         // 1. Load the model
-        await Translator.loadManualDataSet()
+        await Translator.loadManualDataSet(true)
+
         // copy the input to originalInput
         const originalInput = input;
 
