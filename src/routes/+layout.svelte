@@ -5,6 +5,7 @@
 	import '../app.postcss';
 	import { getTheme, setTheme } from '$lib/utils';
 	import Logo from '$lib/components/Logo.svelte';
+	import 'tippy.js/dist/tippy.css';
 
 	let theme = getTheme();
 </script>

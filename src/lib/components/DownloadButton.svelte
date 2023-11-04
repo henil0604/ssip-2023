@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import Icon from '@iconify/svelte';
+	import { tippy } from 'svelte-tippy';
 
 	export let text = '';
 
@@ -26,12 +27,14 @@
 	}
 </script>
 
-<Button
-	variant="ghost"
-	class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
-	on:click={() => {
-		downloadTxtFile(text);
-	}}
->
-	<Icon class="text-xl" icon="dashicons:download" />
-</Button>
+<div use:tippy={{ content: 'Download', placement: 'bottom' }}>
+	<Button
+		variant="ghost"
+		class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
+		on:click={() => {
+			downloadTxtFile(text);
+		}}
+	>
+		<Icon class="text-xl" icon="dashicons:download" />
+	</Button>
+</div>

@@ -9,6 +9,7 @@
 	import Icon from '@iconify/svelte';
 	import { debounce } from 'lodash-es';
 	import { fly } from 'svelte/transition';
+	import { tippy } from 'svelte-tippy';
 
 	let textareaHeight = 200;
 
@@ -130,13 +131,15 @@
 					/>
 
 					<div class="absolute bottom-0.5 right-1 flex gap-1">
-						<Button
-							variant="ghost"
-							class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
-							on:click={handleUpload}
-						>
-							<Icon class="text-xl" icon="dashicons:upload" />
-						</Button>
+						<div use:tippy={{ content: 'Upload txt file', placement: 'bottom' }}>
+							<Button
+								variant="ghost"
+								class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
+								on:click={handleUpload}
+							>
+								<Icon class="text-xl" icon="dashicons:upload" />
+							</Button>
+						</div>
 						<CopyButton bind:input />
 					</div>
 				</div>

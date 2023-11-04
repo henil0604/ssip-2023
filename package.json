@@ -51,8 +51,10 @@
 		"lodash-es": "^4.17.21",
 		"lucide-svelte": "^0.288.0",
 		"openai": "^4.0.0",
+		"svelte-tippy": "^1.3.2",
 		"tailwind-merge": "^1.14.0",
 		"tailwind-variants": "^0.1.16",
+		"tippy.js": "^6.3.7",
 		"trpc-sveltekit": "^3.5.18",
 		"uuid": "^9.0.1",
 		"zod": "^3.22.4"
