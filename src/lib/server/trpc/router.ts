@@ -39,7 +39,7 @@ export const router = t.router({
         let bulletinedContent = null;
 
         if (input.autoBulletins) {
-            bulletinedContent = await OpenAPI.bulletins(input.autoSummarize === true && summarizedContent ? summarizedContent : translation);
+            bulletinedContent = await OpenAPI.bulletins(input.autoSummarize === true && summarizedContent ? summarizedContent : input.text);
 
             if (!bulletinedContent) {
                 return {
