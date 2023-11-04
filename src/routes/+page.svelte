@@ -8,6 +8,8 @@
 	import { Switch } from '$lib/components/ui/switch';
 	import FeedbackBlock from '$lib/components/FeedbackBlock.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
+	import Icon from '@iconify/svelte';
+	import DownloadButton from '$lib/components/DownloadButton.svelte';
 
 	// input field binder
 	let input = '';
@@ -21,6 +23,8 @@
 	let loading = false;
 	// history block reference id
 	let refId: string | null = null;
+
+	let isFileBeingImported = false;
 
 	// options binder
 	let options = {
@@ -98,6 +102,41 @@
 	// this debounce is responsible for managing all the on:input events in input textarea
 	const deboundedTranslate = debounce(translate, 1000 /* 1 second */);
 
+	function handleUpload() {
+		const inputElement = document.createElement('input');
+		inputElement.type = 'file';
+		inputElement.style.position = 'absolute';
+		inputElement.style.top = '0';
+		inputElement.accept = '.txt';
+		inputElement.style.left = '0';
+		inputElement.style.display = 'none';
+
+		document.body.appendChild(inputElement);
+
+		inputElement.oninput = async () => {
+			if (!inputElement || !inputElement.files) return;
+
+			const file = inputElement.files[0];
+
+			if (!file) return;
+
+			isFileBeingImported = true;
+			const text = await file.text();
+
+			console.log('text?', text);
+
+			input = text;
+
+			isFileBeingImported = false;
+
+			document.body.removeChild(inputElement);
+
+			translate();
+		};
+
+		inputElement.click();
+	}
+
 	// observing loading and responseOutput
 	$: output = loading === true ? 'Translating...' : responseOutput_Translation;
 </script>
@@ -110,7 +149,14 @@
 			<!-- english -->
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
 				<Label>English</Label>
-				<div class="relative">
+				<div class="relative overflow-hidden">
+					{#if isFileBeingImported}
+						<div
+							class="absolute top-0 left-0 w-full h-full flex justify-center items-center backdrop-blur-sm z-[3] cursor-wait"
+						>
+							<Icon icon="eos-icons:bubble-loading" class="text-3xl" />
+						</div>
+					{/if}
 					<Textarea
 						on:input={autoResize}
 						on:keydown={(e) => {
@@ -126,7 +172,14 @@
 						placeholder="Start typing..."
 					/>
 
-					<div class="absolute bottom-2 right-1">
+					<div class="absolute bottom-0.5 right-1 flex gap-1">
+						<Button
+							variant="ghost"
+							class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
+							on:click={handleUpload}
+						>
+							<Icon class="text-xl" icon="dashicons:upload" />
+						</Button>
 						<CopyButton bind:input />
 					</div>
 				</div>
@@ -200,7 +253,8 @@
 						style="height: {textareaHeight}px; color: #000;"
 						class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
 					/>
-					<div class="absolute bottom-2 right-1">
+					<div class="absolute bottom-0.5 right-1 flex gap-1">
+						<DownloadButton bind:text={responseOutput_Translation} />
 						<CopyButton bind:input={output} />
 					</div>
 				</div>
@@ -215,7 +269,8 @@
 							style="height: {textareaHeight}px; color: #000;"
 							class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
 						/>
-						<div class="absolute bottom-2 right-1">
+						<div class="absolute bottom-0.5 right-1 flex gap-1">
+							<DownloadButton bind:text={responseOutput_Summarized} />
 							<CopyButton bind:input={output} />
 						</div>
 					</div>
@@ -231,7 +286,8 @@
 							style="height: {textareaHeight}px; color: #000;"
 							class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
 						/>
-						<div class="absolute bottom-2 right-1">
+						<div class="absolute bottom-0.5 right-1 flex gap-1">
+							<DownloadButton bind:text={responseOutput_Bulletined} />
 							<CopyButton bind:input={output} />
 						</div>
 					</div>

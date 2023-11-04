@@ -19,7 +19,7 @@
 <Button
 	size="sm"
 	variant="ghost"
-	class="bg-transparent opacity-60 hover:opacity-100 transition-all"
+	class="bg-transparent opacity-60 hover:opacity-100 transition-all flex justify-center items-center p-1"
 	on:click={handleCopy}
 >
 	{#if copied === false}

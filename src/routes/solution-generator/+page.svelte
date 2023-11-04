@@ -1,8 +1,9 @@
 <script lang="ts">
 	import BasicFeedbackBlock from '$lib/components/BasicFeedbackBlock.svelte';
+	import CopyButton from '$lib/components/CopyButton.svelte';
+	import DownloadButton from '$lib/components/DownloadButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
-
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { trpc } from '$lib/trpc/client';
 	import Icon from '@iconify/svelte';
@@ -12,7 +13,7 @@
 	let textareaHeight = 200;
 
 	let input = '';
-	let output = '';
+	let output = ``;
 	let responseOutput = '';
 	let loading = false;
 	let refId: string | null = null;
@@ -109,19 +110,14 @@
 				<div class="relative">
 					<Textarea
 						on:input={autoResize}
-						readonly
 						bind:value={output}
+						readonly
 						style="height: {textareaHeight}px; color: #000;"
 						class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
 					/>
-					<div class="absolute bottom-2 right-1">
-						<Button
-							size="sm"
-							variant="ghost"
-							class="bg-transparent opacity-60 hover:opacity-100 transition-all"
-						>
-							<Icon icon="basil:copy-solid" class="text-xl" />
-						</Button>
+					<div class="absolute bottom-2 right-1 flex gap-1">
+						<DownloadButton bind:text={output} />
+						<CopyButton bind:input={output} />
 					</div>
 				</div>
 			</div>
