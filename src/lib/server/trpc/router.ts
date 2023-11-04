@@ -17,8 +17,10 @@ export const router = t.router({
 
         console.log("referenceId?", referenceId);
 
+        let summarizedContent: string | null = null;
+
         if (input.autoSummarize) {
-            const summarizedContent = await OpenAPI.Summarize(input.text);
+            summarizedContent = await OpenAPI.Summarize(input.text);
             if (!summarizedContent) {
                 return {
                     error: true,
@@ -27,8 +29,6 @@ export const router = t.router({
                     refId: null
                 }
             }
-
-            input.text = summarizedContent.trim();
         }
 
         let translation = await Translator.translate(input.text, {
@@ -36,9 +36,10 @@ export const router = t.router({
             sentenceReplacementLayer: !input.pureGujarati,
         });
 
+        let bulletinedContent = null;
 
         if (input.autoBulletins) {
-            const bulletinedContent = await OpenAPI.bulletins(translation);
+            bulletinedContent = await OpenAPI.bulletins(input.autoSummarize === true && summarizedContent ? summarizedContent : translation);
 
             if (!bulletinedContent) {
                 return {
@@ -48,8 +49,6 @@ export const router = t.router({
                     refId: null
                 }
             }
-
-            translation = bulletinedContent.trim();
         }
 
         // Store into history table
@@ -67,8 +66,18 @@ export const router = t.router({
         return {
             error: false,
             message: null,
-            data: translation,
-            refId: referenceId
+            data: {
+                translation: translation,
+                summarized: summarizedContent ? await Translator.translate(summarizedContent, {
+                    sentenceReplacementLayer: true,
+                    wordReplacementLayer: true
+                }) : null,
+                bulletined: bulletinedContent ? await Translator.translate(bulletinedContent, {
+                    sentenceReplacementLayer: true,
+                    wordReplacementLayer: true
+                }) : null,
+            },
+            refId: referenceId,
         };
     }),
 

@@ -20,7 +20,7 @@ class OpenAPI {
     /**
      * summarizes the given text
      */
-    public static async Summarize(text: string) {
+    public static async Summarize(text: string): Promise<string | null> {
         if (text.trim() === '') return null;
 
         const response = await OpenAPI.ai.completions.create({
@@ -40,7 +40,7 @@ class OpenAPI {
     /**
      * generates bulletins from input text
      */
-    public static async bulletins(text: string) {
+    public static async bulletins(text: string): Promise<string | null> {
         if (text.trim() === '') return null;
 
         const response = await OpenAPI.ai.completions.create({

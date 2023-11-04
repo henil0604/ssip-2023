@@ -3,12 +3,10 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { trpc } from '$lib/trpc/client';
-	import Icon from '@iconify/svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { debounce } from 'lodash-es';
 	import { Switch } from '$lib/components/ui/switch';
 	import FeedbackBlock from '$lib/components/FeedbackBlock.svelte';
-	import { copyTextToClipboard } from '$lib/utils';
 	import CopyButton from '$lib/components/CopyButton.svelte';
 
 	// input field binder
@@ -16,7 +14,9 @@
 	// output field binder
 	let output = '';
 	// the response coming from RPC call
-	let responseOutput = '';
+	let responseOutput_Translation = '';
+	let responseOutput_Summarized = '';
+	let responseOutput_Bulletined = '';
 	// if the translation function is on-going
 	let loading = false;
 	// history block reference id
@@ -54,13 +54,17 @@
 	async function translate() {
 		// if the input is empty, responseOutput is set to empty string
 		if (input.trim() === '') {
-			responseOutput = '';
+			responseOutput_Translation = '';
+			responseOutput_Summarized = '';
+			responseOutput_Bulletined = '';
 			return;
 		}
 		// if already loading, don't do anything
 		if (loading) return;
 
-		responseOutput = '';
+		responseOutput_Translation = '';
+		responseOutput_Summarized = '';
+		responseOutput_Bulletined = '';
 
 		// set loading to true
 		loading = true;
@@ -75,6 +79,8 @@
 
 		loading = false;
 
+		console.log('response?', response);
+
 		// if the response has error as `true` or the data is null
 		if (response.data === null || response.error) {
 			// console the error
@@ -83,7 +89,9 @@
 			return;
 		}
 
-		responseOutput = response.data;
+		responseOutput_Translation = response.data.translation;
+		responseOutput_Summarized = response.data.summarized || '';
+		responseOutput_Bulletined = response.data.bulletined || '';
 		refId = response.refId || null;
 	}
 
@@ -91,7 +99,7 @@
 	const deboundedTranslate = debounce(translate, 1000 /* 1 second */);
 
 	// observing loading and responseOutput
-	$: output = loading === true ? 'Translating...' : responseOutput;
+	$: output = loading === true ? 'Translating...' : responseOutput_Translation;
 </script>
 
 <div class="w-full min-h-full flex flex-col items-center gap-6">
@@ -179,7 +187,11 @@
 
 			<!-- gujarati -->
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
-				<Label>Gujarati</Label>
+				<Label
+					>{options.autoSummarize || options.autoBulletins
+						? 'Original Gujarati'
+						: 'Gujarati'}</Label
+				>
 				<div class="relative">
 					<Textarea
 						on:input={autoResize}
@@ -192,8 +204,40 @@
 						<CopyButton bind:input={output} />
 					</div>
 				</div>
+				{#if responseOutput_Summarized}
+					<div class="my-2" />
+					<Label>Summarized</Label>
+					<div class="relative">
+						<Textarea
+							on:input={autoResize}
+							readonly
+							bind:value={responseOutput_Summarized}
+							style="height: {textareaHeight}px; color: #000;"
+							class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
+						/>
+						<div class="absolute bottom-2 right-1">
+							<CopyButton bind:input={output} />
+						</div>
+					</div>
+				{/if}
+				{#if responseOutput_Bulletined}
+					<div class="my-2" />
+					<Label>Bulletined</Label>
+					<div class="relative">
+						<Textarea
+							on:input={autoResize}
+							readonly
+							bind:value={responseOutput_Bulletined}
+							style="height: {textareaHeight}px; color: #000;"
+							class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
+						/>
+						<div class="absolute bottom-2 right-1">
+							<CopyButton bind:input={output} />
+						</div>
+					</div>
+				{/if}
 				<div class="my-2" />
-				{#if responseOutput && !loading && refId}
+				{#if responseOutput_Translation && !loading && refId}
 					<FeedbackBlock {refId} />
 				{/if}
 			</div>
