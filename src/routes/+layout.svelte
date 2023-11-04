@@ -25,18 +25,19 @@
 		<Button variant="link" href="/" class={$page.url.pathname === '/' ? 'text-orange-600' : ''}
 			>Translator</Button
 		>
-		<Button
-			variant="link"
-			href="/solution-generator"
-			class={$page.url.pathname === '/solution-generator' ? 'text-orange-600' : ''}
-			>Solution Generator</Button
-		>
 
 		<Button
 			variant="link"
 			href="/question-generator"
 			class={$page.url.pathname === '/question-generator' ? 'text-orange-600' : ''}
 			>Question Generator</Button
+		>
+
+		<Button
+			variant="link"
+			href="/solution-generator"
+			class={$page.url.pathname === '/solution-generator' ? 'text-orange-600' : ''}
+			>Solution Generator</Button
 		>
 
 		<Button
