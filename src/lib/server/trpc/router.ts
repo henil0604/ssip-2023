@@ -68,11 +68,11 @@ export const router = t.router({
             message: null,
             data: {
                 translation: translation,
-                summarized: summarizedContent ? await Translator.translate(summarizedContent, {
+                summarized: input.autoSummarize === true && summarizedContent ? await Translator.translate(summarizedContent, {
                     sentenceReplacementLayer: true,
                     wordReplacementLayer: true
                 }) : null,
-                bulletined: bulletinedContent ? await Translator.translate(bulletinedContent, {
+                bulletined: input.autoBulletins == true && bulletinedContent ? await Translator.translate(bulletinedContent, {
                     sentenceReplacementLayer: true,
                     wordReplacementLayer: true
                 }) : null,
