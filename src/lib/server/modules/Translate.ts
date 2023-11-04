@@ -131,7 +131,7 @@ class Translator {
         console.log('--------------------');
         console.log("input?", input);
         // 1. Load the model
-        await Translator.loadManualDataSet(true)
+        await Translator.loadManualDataSet()
 
         // copy the input to originalInput
         const originalInput = input;
