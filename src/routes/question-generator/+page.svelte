@@ -1,9 +1,9 @@
 <script lang="ts">
 	import BasicFeedbackBlock from '$lib/components/BasicFeedbackBlock.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
+	import DownloadButton from '$lib/components/DownloadButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Label } from '$lib/components/ui/label';
-
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { trpc } from '$lib/trpc/client';
 	import Icon from '@iconify/svelte';
@@ -17,6 +17,7 @@
 	let responseOutput = '';
 	let loading = false;
 	let refId: string | null = null;
+	let isFileBeingImported = false;
 
 	function autoResize(event?: Event, target?: HTMLTextAreaElement) {
 		const t = target || (event?.target as HTMLTextAreaElement);
@@ -54,6 +55,41 @@
 		refId = response.refId || null;
 	}
 
+	function handleUpload() {
+		const inputElement = document.createElement('input');
+		inputElement.type = 'file';
+		inputElement.style.position = 'absolute';
+		inputElement.style.top = '0';
+		inputElement.accept = '.txt';
+		inputElement.style.left = '0';
+		inputElement.style.display = 'none';
+
+		document.body.appendChild(inputElement);
+
+		inputElement.oninput = async () => {
+			if (!inputElement || !inputElement.files) return;
+
+			const file = inputElement.files[0];
+
+			if (!file) return;
+
+			isFileBeingImported = true;
+			const text = await file.text();
+
+			console.log('text?', text);
+
+			input = text;
+
+			isFileBeingImported = false;
+
+			document.body.removeChild(inputElement);
+
+			// generateQuestion();
+		};
+
+		inputElement.click();
+	}
+
 	$: output = loading === true ? 'Generating...' : responseOutput;
 
 	const deboundedGenerateQuestion = debounce(generateQuestion, 1000);
@@ -72,6 +108,13 @@
 			<div class="flex-grow flex flex-col w-full min-h-full h-full gap-1.5">
 				<Label>Text</Label>
 				<div class="relative">
+					{#if isFileBeingImported}
+						<div
+							class="absolute top-0 left-0 w-full h-full flex justify-center items-center backdrop-blur-sm z-[3] cursor-wait"
+						>
+							<Icon icon="eos-icons:bubble-loading" class="text-3xl" />
+						</div>
+					{/if}
 					<Textarea
 						on:keydown={(e) => {
 							if (e.keyCode === 13) {
@@ -86,7 +129,14 @@
 						bind:value={input}
 					/>
 
-					<div class="absolute bottom-2 right-1">
+					<div class="absolute bottom-0.5 right-1 flex gap-1">
+						<Button
+							variant="ghost"
+							class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
+							on:click={handleUpload}
+						>
+							<Icon class="text-xl" icon="dashicons:upload" />
+						</Button>
 						<CopyButton bind:input />
 					</div>
 				</div>
@@ -109,7 +159,8 @@
 						style="height: {textareaHeight}px; color: #000;"
 						class="min-h-[200px] border-black text-xl bg-gray-100 dark:bg-transparent dark:border-white dark:!text-white resize-none"
 					/>
-					<div class="absolute bottom-2 right-1">
+					<div class="absolute bottom-0.5 right-1 flex gap-1">
+						<DownloadButton bind:text={output} />
 						<CopyButton bind:input={output} />
 					</div>
 				</div>
