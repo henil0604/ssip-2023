@@ -6,8 +6,17 @@
 	import { getTheme, setTheme } from '$lib/utils';
 	import Logo from '$lib/components/Logo.svelte';
 	import 'tippy.js/dist/tippy.css';
+	import { onMount } from 'svelte';
+	import { tesseractWorker } from '$lib/store';
+	import { createWorker } from 'tesseract.js';
 
 	let theme = getTheme();
+
+	onMount(async () => {
+		console.log('creating tesseract worker...');
+		$tesseractWorker = await createWorker('eng');
+		console.log('tesseract worker created...');
+	});
 </script>
 
 <div class="w-full h-fit px-5 py-3 flex">

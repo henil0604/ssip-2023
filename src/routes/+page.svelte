@@ -10,7 +10,7 @@
 	import CopyButton from '$lib/components/CopyButton.svelte';
 	import Icon from '@iconify/svelte';
 	import DownloadButton from '$lib/components/DownloadButton.svelte';
-	import { tippy } from 'svelte-tippy';
+	import UploadButton from '$lib/components/UploadButton.svelte';
 
 	// input field binder
 	let input = '';
@@ -26,6 +26,7 @@
 	let refId: string | null = null;
 
 	let isFileBeingImported = false;
+	let loadingStatus = '';
 
 	// options binder
 	let options = {
@@ -74,6 +75,8 @@
 		// set loading to true
 		loading = true;
 
+		console.log(`length: ${input.length}`);
+
 		// RPC
 		const response = await trpc().translate.query({
 			text: input,
@@ -103,41 +106,6 @@
 	// this debounce is responsible for managing all the on:input events in input textarea
 	const deboundedTranslate = debounce(translate, 1000 /* 1 second */);
 
-	function handleUpload() {
-		const inputElement = document.createElement('input');
-		inputElement.type = 'file';
-		inputElement.style.position = 'absolute';
-		inputElement.style.top = '0';
-		inputElement.accept = '.txt';
-		inputElement.style.left = '0';
-		inputElement.style.display = 'none';
-
-		document.body.appendChild(inputElement);
-
-		inputElement.oninput = async () => {
-			if (!inputElement || !inputElement.files) return;
-
-			const file = inputElement.files[0];
-
-			if (!file) return;
-
-			isFileBeingImported = true;
-			const text = await file.text();
-
-			console.log('text?', text);
-
-			input = text;
-
-			isFileBeingImported = false;
-
-			document.body.removeChild(inputElement);
-
-			translate();
-		};
-
-		inputElement.click();
-	}
-
 	// observing loading and responseOutput
 	$: output = loading === true ? 'Translating...' : responseOutput_Translation;
 </script>
@@ -153,9 +121,14 @@
 				<div class="relative overflow-hidden">
 					{#if isFileBeingImported}
 						<div
-							class="absolute top-0 left-0 w-full h-full flex justify-center items-center backdrop-blur-sm z-[3] cursor-wait"
+							class="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center backdrop-blur-sm z-[3] cursor-wait"
 						>
 							<Icon icon="eos-icons:bubble-loading" class="text-3xl" />
+							{#if loadingStatus}
+								<div class="mt-1">
+									{loadingStatus}
+								</div>
+							{/if}
 						</div>
 					{/if}
 					<Textarea
@@ -174,15 +147,7 @@
 					/>
 
 					<div class="absolute bottom-0.5 right-1 flex gap-1">
-						<div use:tippy={{ content: 'Upload txt file', placement: 'bottom' }}>
-							<Button
-								variant="ghost"
-								class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
-								on:click={handleUpload}
-							>
-								<Icon class="text-xl" icon="dashicons:upload" />
-							</Button>
-						</div>
+						<UploadButton bind:input bind:isFileBeingImported bind:loadingStatus />
 						<CopyButton bind:input />
 					</div>
 				</div>

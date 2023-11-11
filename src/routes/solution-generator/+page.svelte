@@ -10,6 +10,7 @@
 	import { debounce } from 'lodash-es';
 	import { fly } from 'svelte/transition';
 	import { tippy } from 'svelte-tippy';
+	import UploadButton from '$lib/components/UploadButton.svelte';
 
 	let textareaHeight = 200;
 
@@ -19,6 +20,7 @@
 	let loading = false;
 	let refId: string | null = null;
 	let isFileBeingImported = false;
+	let loadingStatus = '';
 
 	function autoResize(event?: Event, target?: HTMLTextAreaElement) {
 		const t = target || (event?.target as HTMLTextAreaElement);
@@ -57,44 +59,7 @@
 		refId = response.refId || null;
 	}
 
-	function handleUpload() {
-		const inputElement = document.createElement('input');
-		inputElement.type = 'file';
-		inputElement.style.position = 'absolute';
-		inputElement.style.top = '0';
-		inputElement.accept = '.txt';
-		inputElement.style.left = '0';
-		inputElement.style.display = 'none';
-
-		document.body.appendChild(inputElement);
-
-		inputElement.oninput = async () => {
-			if (!inputElement || !inputElement.files) return;
-
-			const file = inputElement.files[0];
-
-			if (!file) return;
-
-			isFileBeingImported = true;
-			const text = await file.text();
-
-			console.log('text?', text);
-
-			input = text;
-
-			isFileBeingImported = false;
-
-			document.body.removeChild(inputElement);
-
-			// generateSolution();
-		};
-
-		inputElement.click();
-	}
-
 	$: output = loading === true ? 'Solving...' : responseOutput;
-
-	const deboundedGenerateSolution = debounce(generateSolution, 1000);
 </script>
 
 <div class="w-full min-h-full flex flex-col gap-6">
@@ -132,15 +97,7 @@
 					/>
 
 					<div class="absolute bottom-0.5 right-1 flex gap-1">
-						<div use:tippy={{ content: 'Upload txt file', placement: 'bottom' }}>
-							<Button
-								variant="ghost"
-								class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
-								on:click={handleUpload}
-							>
-								<Icon class="text-xl" icon="dashicons:upload" />
-							</Button>
-						</div>
+						<UploadButton bind:input bind:isFileBeingImported bind:loadingStatus />
 						<CopyButton bind:input />
 					</div>
 				</div>
