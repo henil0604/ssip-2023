@@ -1,9 +1,8 @@
 <script>
-	import '../app.postcss';
 	import Header from './Header.svelte';
 </script>
 
-<div class="flex flex-col min-h-full">
+<div class="min-w-fit min-h-fit flex flex-col py-6 container">
 	<Header />
 	<slot />
 </div>
