@@ -1,7 +1,6 @@
 import { NODE_ENV } from "$env/static/private";
 import { PrismaClient } from "@prisma/client";
 
-// sets the global with prisma type
 const globalForPrisma = globalThis as unknown as {
     prisma: PrismaClient | undefined;
 };
