@@ -3,6 +3,6 @@
 </script>
 
 <div class="min-w-fit min-h-fit flex flex-col py-6 container">
-	<Header />
+	<!-- <Header /> -->
 	<slot />
 </div>

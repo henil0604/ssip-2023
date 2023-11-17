@@ -1,15 +1,23 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
+	import { onMount } from 'svelte';
 
-	let DEFAULT_HEIGHT = 250;
+	let DEFAULT_HEIGHT = 170;
 
 	export let value = '';
 	export let height = DEFAULT_HEIGHT;
 
-	let className = '';
-	export { className as class };
+	export let wrapperClass = '';
+	export let inputClass = '';
+	export let readonly = false;
 
 	let editorRef: HTMLDivElement;
+
+	onMount(() => {
+		if (readonly) {
+			editorRef.contentEditable = 'false';
+		}
+	});
 
 	// if the value is empty
 	$: if (value.trim() === '') {
@@ -19,13 +27,13 @@
 	}
 </script>
 
-<div class="relative" style="height: {height}px;">
+<div class={cn('relative', wrapperClass)} style="height: {height}px;">
 	<div
 		bind:this={editorRef}
-		contenteditable="true"
+		contenteditable="plaintext-only"
 		class={cn(
-			'w-full h-full flex-grow outline-none px-4 py-3 z-[2] absolute top-0 left-0 bg-transparent',
-			className
+			'w-full h-fit flex-grow outline-none px-4 py-3 z-[2] absolute top-0 left-0 bg-transparent',
+			inputClass
 		)}
 		bind:innerText={value}
 	/>

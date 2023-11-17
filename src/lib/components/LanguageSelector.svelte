@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Select from '$lib/components/ui/select';
-	import { LanguagesMap } from '$lib/const';
+	import { LanguageMap } from '$lib/const';
 
-	const LanguagesList = Object.keys(LanguagesMap).map((languageName) => {
-		return [languageName, LanguagesMap[languageName as keyof typeof LanguagesMap]];
+	const LanguagesList = Object.keys(LanguageMap).map((languageName) => {
+		return [languageName, LanguageMap[languageName as keyof typeof LanguageMap]];
 	});
 
 	export let value: string = LanguagesList[0][1];

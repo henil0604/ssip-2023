@@ -9,17 +9,17 @@ declare global {
 	}
 }
 
-export declare module "@auth/core/types" {
+export declare module '@auth/core/types' {
 	// User coming from database
 	interface User {
-		id?: string
+		id?: string;
 	}
 	interface Session {
 		// user that will be set to session
 		user: {
-			id?: string
+			id?: string;
 		} & DefaultSession['user'];
 	}
 }
 
-export { };
+export {};
