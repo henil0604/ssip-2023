@@ -4,37 +4,47 @@
 
 	const modes = [
 		{
-			name: 'Translate Text',
+			name: 'Text',
 			href: '/translator',
 			icon: 'solar:text-bold',
-			description: '60+ Languages'
+			description: 'Translation for 100+ Languages'
 		},
 		{
-			name: 'Translate File',
+			name: 'Image',
+			href: '/translator/image',
+			icon: 'bx:image',
+			description: '.png, .jpg'
+		},
+		{
+			name: 'File',
 			href: '/translator/file',
 			icon: 'bx:file',
-			description: '.png, .jpg, URL'
+			description: 'Translate .pdf, .txt, .docx files'
 		}
 	];
+
+	$: selectedDescription = modes.find((e) => e.href === $page.url.pathname)?.description || '';
 </script>
 
-<div class="flex gap-1">
-	<!--  -->
+<div class="flex gap-2">
 	{#each modes as mode}
 		{@const isActive = mode.href === $page.url.pathname}
 		<a
-			class="rounded flex justify-center p-2 gap-2 items-center shadow transition-all cursor-pointer {isActive
-				? 'bg-orange-600 text-white'
+			class="w-[100px] rounded flex justify-center py-2 px-3 gap-2 items-center shadow transition-all cursor-pointer {isActive
+				? 'bg-theme-600 text-white'
 				: 'bg-white hover:shadow-lg hover:-translate-y-1'}"
 			href={mode.href}
 		>
-			<Icon icon={mode.icon} class={isActive ? 'text-white' : 'text-orange-700'} width="30" />
-			<div class="flex flex-col">
-				<h1 class="text-sm">{mode.name}</h1>
-				<p class="text-muted-foreground text-[10px]" class:text-white={isActive}>
-					{mode.description}
-				</p>
-			</div>
+			<Icon
+				icon={mode.icon}
+				class="h-full {isActive ? 'text-white' : 'text-theme-700'}"
+				width="20"
+			/>
+			<h1 class="h-full {isActive ? 'font-semibold' : ''}">{mode.name}</h1>
 		</a>
 	{/each}
 </div>
+
+{#if selectedDescription}
+	<h1 class="mt-3 text-muted-foreground">{selectedDescription}</h1>
+{/if}

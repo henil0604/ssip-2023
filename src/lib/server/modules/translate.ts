@@ -53,19 +53,7 @@ export async function translate(options: TranslateOptions): Promise<TranslateOut
 		options.input = PreLayerResponse.result;
 	}
 
-	// tokenize
-	const SentenceTokenizer = new natural.SentenceTokenizerNew();
-	let sentences = SentenceTokenizer.tokenize(options.input);
-
-	// translate
-	let translatedSentences = await Promise.all(
-		sentences.map(async (sentence) => {
-			return await googleTranslate(sentence, options.sourceLanguage, options.targetLanguage);
-		})
-	);
-
-	let translation = translatedSentences.join(' ');
-	console.log('translation?', translation);
+	let translation = await googleTranslate(options.input, options.sourceLanguage, options.targetLanguage);
 
 	// apply post-layer if enabled
 	if (options.layers.postReplacer) {
