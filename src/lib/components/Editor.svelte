@@ -43,7 +43,7 @@
 		bind:this={editorRef}
 		contenteditable="plaintext-only"
 		class={cn(
-			'w-full h-full flex-grow outline-none px-4 py-3 pr-10 z-[2] absolute top-0 left-0 bg-transparent text-xl',
+			'w-full h-full break-all flex-grow outline-none px-4 py-3 pr-10 z-[2] absolute top-0 left-0 bg-transparent text-xl',
 			inputClass
 		)}
 		bind:innerText={value}

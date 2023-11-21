@@ -177,7 +177,7 @@
 		isBeingTranslated = false;
 	}
 
-	const debouncedTranslate = debounce(translate, 300);
+	const debouncedTranslate = debounce(translate, 100);
 
 	sourceLanguage.subscribe(() => {
 		if ($sourceLanguage === $targetLanguage) {
