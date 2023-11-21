@@ -112,8 +112,9 @@ export type LanguagesInCodeKeys = (typeof LanguageMap)[LanguagesInHumanReadableK
 
 export const ResponseCodeMap = {
 	SUCCESS: 'B001',
-	UNKNOWN_ERROR: 'B002'
+	UNKNOWN_ERROR: 'B002',
+	FAILED_TO_SUMMARIZE: 'B003'
 } as const;
 
 
-export const DEFAULT_EDITOR_HEIGHT = 250;
+export const DEFAULT_EDITOR_HEIGHT = 170;

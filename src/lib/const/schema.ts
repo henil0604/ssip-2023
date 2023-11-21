@@ -19,13 +19,12 @@ export const translate = {
 		data: z
 			.object({
 				referenceId: z.string(),
-				result: z.string(),
-				extra: z
+				output: z
 					.object({
 						summarized: z.string().optional(),
-						bulletined: z.string().optional()
+						bulletined: z.string().optional(),
+						original: z.string()
 					})
-					.optional()
 			})
 			.optional()
 	})

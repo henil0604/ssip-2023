@@ -1,7 +1,10 @@
 <script>
+	import { page } from '$app/stores';
 	import '../app.postcss';
 	import Header from './Header.svelte';
 	import 'tippy.js/dist/tippy.css';
+
+	$: console.log($page.data);
 </script>
 
 <svelte:head>

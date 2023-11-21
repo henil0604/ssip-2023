@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import AccountDropdown from '$lib/components/AccountDropdown.svelte';
+	import LoginDialog from '$lib/components/LoginDialog.svelte';
 	import Logo from '$lib/components/Logo.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import Icon from '@iconify/svelte';
 
 	const links = [
 		{
@@ -9,14 +13,17 @@
 			activeForChildren: true
 		},
 		{
-			name: 'Question Generator',
-			href: '/question-generator'
+			name: 'Solution Generator',
+			href: '/solution-generator'
 		}
 	];
 
 	function isChildrenOfParent(parent: string) {
 		return $page.url.pathname.startsWith(parent);
 	}
+
+	let loginDialogOpen: boolean = false;
+	let accountDropdownOpen: boolean = false;
 </script>
 
 <div
@@ -30,7 +37,10 @@
 	</div>
 
 	<!-- content -->
-	<div class="flex-grow flex justify-end gap-3">
+	<div class="flex-grow flex justify-end gap-3" />
+
+	<!-- tail -->
+	<div class="flex justify-end items-center gap-3">
 		{#each links as link}
 			{@const isActive =
 				link.href === $page.url.pathname ||
@@ -44,10 +54,21 @@
 				{link.name}
 			</a>
 		{/each}
-	</div>
 
-	<!-- tail -->
-	<div class="">
-		<!--  -->
+		<!-- Login -->
+		{#if !$page.data.session}
+			<Button
+				size="sm"
+				on:click={() => {
+					loginDialogOpen = true;
+				}}
+				class="bg-theme-600 hover:bg-theme-500 text-theme-foreground">Login</Button
+			>
+			<LoginDialog bind:open={loginDialogOpen} />
+		{/if}
+
+		{#if $page.data.session && $page.data.session.user}
+			<AccountDropdown bind:open={accountDropdownOpen} />
+		{/if}
 	</div>
 </div>

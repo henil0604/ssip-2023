@@ -59,3 +59,39 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model History {
+  id String @id @default(cuid()) @map("_id")
+
+  input                 String
+  originalTranslation   String
+  summarizedTranslation String?
+  bulletinedTranslation String?
+
+  type HistoryType @default(TRANSLATION)
+
+  createdAt DateTime @default(now())
+
+  feedbacks Feedback[]
+}
+
+model Feedback {
+  id String @id @default(cuid()) @map("_id")
+
+  ref   History @relation(fields: [refId], references: [id])
+  refId String
+
+  isPositive Boolean
+
+  isGrammarError     Boolean
+  isSpellingError    Boolean
+  isTranslationError Boolean
+
+  createdAt DateTime @default(now())
+}
+
+enum HistoryType {
+  TRANSLATION
+  QUESTION_GENERATOR
+  SOLUTION_GENERATOR
+}

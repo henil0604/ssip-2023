@@ -49,7 +49,8 @@ const config = {
 					DEFAULT: 'hsl(var(--card) / <alpha-value>)',
 					foreground: 'hsl(var(--card-foreground) / <alpha-value>)'
 				},
-				theme: colors.orange
+				theme: colors.orange,
+				'theme-foreground': colors.white
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
