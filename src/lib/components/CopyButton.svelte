@@ -21,7 +21,7 @@
 	<Button
 		size="sm"
 		variant="ghost"
-		class="w-fit h-fit rounded-full bg-transparent opacity-60 hover:opacity-100 transition-all flex justify-center items-center p-2"
+		class="w-fit h-fit rounded-full bg-transparent opacity-90 hover:opacity-100 transition-all flex justify-center items-center p-2"
 		on:click={handleCopy}
 	>
 		{#if copied === false}

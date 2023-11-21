@@ -6,6 +6,7 @@
 	import Editor from '$lib/components/Editor.svelte';
 	import FeedbackBlock from '$lib/components/FeedbackBlock.svelte';
 	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
+	import TextToSpeechButton from '$lib/components/TextToSpeechButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Switch } from '$lib/components/ui/switch';
 	import { DEFAULT_EDITOR_HEIGHT, type LanguagesInCodeKeys } from '$lib/const';
@@ -15,6 +16,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import tippy from 'svelte-tippy';
 	import { writable } from 'svelte/store';
+	import OutputEditorBlock from './OutputEditorBlock.svelte';
 
 	let sourceLanguage = writable<LanguagesInCodeKeys>('en');
 	let targetLanguage = writable<LanguagesInCodeKeys>('gu');
@@ -265,7 +267,8 @@
 						<h1 class="text-xl">Type to translate...</h1>
 					</div>
 				</Editor>
-				<div class="p-3 flex justify-end">
+				<div class="p-3 flex justify-end gap-1">
+					<TextToSpeechButton bind:input={$input} />
 					<CopyButton bind:input={$input} />
 				</div>
 			</div>
@@ -327,92 +330,77 @@
 
 		<!-- right -->
 		<div class="flex flex-col gap-5 max-h-fit">
-			<div class="w-full grow-0 min-h-fit flex flex-col gap-0 border border-black rounded">
-				<Editor
-					id="originalOutput"
-					readonly={true}
-					wrapperClass=""
-					bind:this={$editorRefs.originalOutput}
-					bind:value={$output.original}
-					bind:height={$editorHeights.originalOutput}
-					allowClearButton={false}
-				>
-					<div slot="placeholder" />
-				</Editor>
-				<div class="p-3 flex justify-end items-center gap-2">
-					<div
-						class="rounded-full flex justify-center items-center gap-2 bg-theme-600 text-white p-1 px-3 text-sm"
-					>
-						{#if isBeingTranslated}
+			<OutputEditorBlock
+				bind:editor={$editorRefs.originalOutput}
+				bind:height={$editorHeights.originalOutput}
+				bind:value={$output.original}
+				bind:isBeingTranslated
+			>
+				<svelte:fragment slot="footerLeft">
+					{#if isBeingTranslated}
+						<div
+							class="rounded-full transition-all flex justify-center items-center gap-2 p-1 px-3 text-base text-theme-600"
+						>
 							Translating <Icon icon="svg-spinners:270-ring-with-bg" />
-						{:else}
+						</div>
+					{:else if $options.autoSummarize || $options.autoBulletins}
+						<div
+							class="rounded-full transition-all flex justify-center items-center gap-2 p-1 px-3 text-sm bg-theme-600 text-white"
+						>
 							Original
-						{/if}
-					</div>
-					{#if output}
-						<CopyButton bind:input={$output.original} />
+						</div>
 					{/if}
-				</div>
-			</div>
+				</svelte:fragment>
+			</OutputEditorBlock>
 
 			{#if $options.autoSummarize && ($output.summarized || ($options.autoSummarize && isBeingTranslated))}
-				<div class="w-full grow-0 min-h-fit flex flex-col gap-0 border border-black rounded">
-					<Editor
-						id="summarizedOutput"
-						readonly={true}
-						wrapperClass=""
-						bind:this={$editorRefs.summarizedOutput}
-						bind:value={$output.summarized}
-						bind:height={$editorHeights.summarizedOutput}
-						allowClearButton={false}
-					>
-						<div slot="placeholder" />
-					</Editor>
-					<div class="p-3 flex justify-end items-center gap-2">
-						<div
-							class="rounded-full flex justify-center items-center gap-2 bg-theme-600 text-white p-1 px-3 text-sm"
-						>
-							{#if isBeingTranslated}
+				<OutputEditorBlock
+					bind:editor={$editorRefs.summarizedOutput}
+					bind:height={$editorHeights.summarizedOutput}
+					bind:value={$output.summarized}
+					bind:isBeingTranslated
+				>
+					<svelte:fragment slot="footerLeft">
+						{#if isBeingTranslated}
+							<div
+								class="rounded-full transition-all flex justify-center items-center gap-2 p-1 px-3 text-base text-theme-600"
+							>
 								Summarizing <Icon icon="svg-spinners:270-ring-with-bg" />
-							{:else}
+							</div>
+						{:else}
+							<div
+								class="rounded-full transition-all flex justify-center items-center gap-2 p-1 px-3 text-sm bg-theme-600 text-white"
+							>
 								Summarized
-							{/if}
-						</div>
-						{#if output}
-							<CopyButton bind:input={$output.summarized} />
+							</div>
 						{/if}
-					</div>
-				</div>
+					</svelte:fragment>
+				</OutputEditorBlock>
 			{/if}
 
 			{#if $options.autoBulletins && ($output.bulletined || ($options.autoBulletins && isBeingTranslated))}
-				<div class="w-full grow-0 min-h-fit flex flex-col gap-0 border border-black rounded">
-					<Editor
-						id="bulletinedOutput"
-						readonly={true}
-						wrapperClass=""
-						bind:this={$editorRefs.bulletinedOutput}
-						bind:value={$output.bulletined}
-						bind:height={$editorHeights.bulletinedOutput}
-						allowClearButton={false}
-					>
-						<div slot="placeholder" />
-					</Editor>
-					<div class="p-3 flex justify-end items-center gap-2">
-						<div
-							class="rounded-full flex justify-center items-center gap-2 bg-theme-600 text-white p-1 px-3 text-sm"
-						>
-							{#if isBeingTranslated}
-								Processing <Icon icon="svg-spinners:270-ring-with-bg" />
-							{:else}
+				<OutputEditorBlock
+					bind:editor={$editorRefs.bulletinedOutput}
+					bind:height={$editorHeights.bulletinedOutput}
+					bind:value={$output.bulletined}
+					bind:isBeingTranslated
+				>
+					<svelte:fragment slot="footerLeft">
+						{#if isBeingTranslated}
+							<div
+								class="rounded-full transition-all flex justify-center items-center gap-2 p-1 px-3 text-base text-theme-600"
+							>
+								Bulletizing <Icon icon="svg-spinners:270-ring-with-bg" />
+							</div>
+						{:else}
+							<div
+								class="rounded-full transition-all flex justify-center items-center gap-2 p-1 px-3 text-sm bg-theme-600 text-white"
+							>
 								Bulletined
-							{/if}
-						</div>
-						{#if output}
-							<CopyButton bind:input={$output.bulletined} />
+							</div>
 						{/if}
-					</div>
-				</div>
+					</svelte:fragment>
+				</OutputEditorBlock>
 			{/if}
 
 			<!-- feedback -->

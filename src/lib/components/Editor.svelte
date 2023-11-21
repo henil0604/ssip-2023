@@ -27,6 +27,12 @@
 		}
 	});
 
+	$: if (readonly && editorRef) {
+		editorRef!.contentEditable = 'false';
+	} else if (!readonly && editorRef) {
+		editorRef!.contentEditable = 'true';
+	}
+
 	export function resize() {
 		if (value.trim() === '') {
 			height = DEFAULT_EDITOR_HEIGHT;
@@ -43,7 +49,7 @@
 		bind:this={editorRef}
 		contenteditable="plaintext-only"
 		class={cn(
-			'w-full h-full break-all flex-grow outline-none px-4 py-3 pr-10 z-[2] absolute top-0 left-0 bg-transparent text-xl',
+			'w-full h-full break-all flex-grow outline-none px-4 py-3 pr-16 z-[2] absolute top-0 left-0 bg-transparent text-xl',
 			inputClass
 		)}
 		bind:innerText={value}

@@ -14,6 +14,10 @@
 		href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@300;400&display=swap"
 		rel="stylesheet"
 	/>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@300;400&family=Poppins&display=swap"
+		rel="stylesheet"
+	/>
 </svelte:head>
 
 <div class="flex flex-col min-h-full">
