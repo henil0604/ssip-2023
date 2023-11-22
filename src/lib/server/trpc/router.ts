@@ -5,6 +5,9 @@ import { translate } from '$lib/server/modules/translate';
 import OpenAPI from '$lib/modules/OpenAPI';
 import { LanguageMap } from '$lib/const';
 import { string, z } from 'zod';
+import { toFile } from 'openai';
+import ISO6391 from 'iso-639-1';
+import type OpenAI from 'openai';
 
 export const router = t.router({
 	translate: publicProcedure
@@ -177,6 +180,65 @@ export const router = t.router({
 		}).asResponse()
 
 		return await response.buffer();
+	}),
+
+	speechToText: publicProcedure.input(z.object({
+		arrayBuffer: z.array(z.number()),
+		type: z.string(),
+		language: z.string()
+	})).mutation(async ({ ctx, input }) => {
+
+		console.log(input)
+
+		const arrayUint8 = new Uint8Array(input.arrayBuffer);
+
+		console.log(arrayUint8);
+
+		let blob = new Blob([arrayUint8], {
+			type: input.type
+		});
+		console.log(blob)
+
+		const extension = input.type.split('/')[1]
+
+		const file = await toFile(blob, `${Date.now().toString()}.${extension}`, {
+			type: input.type
+		})
+		console.log(file)
+
+		let response: OpenAI.Audio.Transcription;
+		try {
+			response = await OpenAPI.ai.audio.transcriptions.create({
+				model: 'whisper-1',
+				file: file,
+				response_format: 'json',
+				language: input.language
+			})
+			console.log("response?", response);
+
+			return {
+				code: 'DONE',
+				message: "",
+				response: response.text
+			};
+		} catch (error: any) {
+			error = (JSON.parse(JSON.stringify(error)));
+
+			if (error.code === 'unsupported_language') {
+				return {
+					code: error.code.toUpperCase(),
+					message: 'Language is not Supported',
+					response: null
+				}
+			}
+
+			return {
+				code: 'UNKNOWN_ERROR',
+				message: 'Unknown error',
+				response: null
+			}
+
+		}
 	})
 });
 
