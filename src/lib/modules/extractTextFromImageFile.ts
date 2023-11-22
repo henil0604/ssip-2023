@@ -3,11 +3,7 @@ import { tesseractWorker } from "$lib/store";
 import { get } from "svelte/store";
 import { createWorker } from "tesseract.js";
 
-function getInternationalCode(lang: keyof typeof GoogleLanguageCodeToInternationalLanguageCode) {
-    return GoogleLanguageCodeToInternationalLanguageCode[lang]
-}
-
-type ProgressCodes = 'CHECKING_FILE' | 'GETTING_WORKER' | 'CREATING_WORKER' | 'INITIALIZING_WORKER' | 'RECOGNIZING' | "PARSING"
+export type ProgressCodes = 'CHECKING_FILE' | 'GETTING_WORKER' | 'CREATING_WORKER' | 'INITIALIZING_WORKER' | 'RECOGNIZING' | "PARSING"
 export async function extractTextFromImageFile(file: File, lang: LanguagesInCodeKeys, onProgress?: (data: { code: ProgressCodes }) => unknown) {
     console.log("file?", file);
 
@@ -15,7 +11,8 @@ export async function extractTextFromImageFile(file: File, lang: LanguagesInCode
         code: 'CHECKING_FILE'
     })
 
-    let ocrLanguage = getInternationalCode(lang as keyof typeof GoogleLanguageCodeToInternationalLanguageCode)
+    let ocrLanguage = GoogleLanguageCodeToInternationalLanguageCode[lang as keyof typeof GoogleLanguageCodeToInternationalLanguageCode]
+
 
     if (!file.type.startsWith('image')) {
         return {
@@ -29,7 +26,6 @@ export async function extractTextFromImageFile(file: File, lang: LanguagesInCode
 
     let worker = get(tesseractWorker);
 
-
     if (!worker) {
         onProgress?.({
             code: 'CREATING_WORKER'
@@ -37,12 +33,10 @@ export async function extractTextFromImageFile(file: File, lang: LanguagesInCode
         worker = await createWorker(ocrLanguage)
     }
 
-
     onProgress?.({
         code: 'INITIALIZING_WORKER'
     })
     await worker.reinitialize(ocrLanguage);
-
 
     onProgress?.({
         code: 'RECOGNIZING'

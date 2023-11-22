@@ -17,8 +17,9 @@
 </script>
 
 <svelte:head>
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.6.172/build/pdf.min.js"></script>
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@300;400&display=swap"
 		rel="stylesheet"

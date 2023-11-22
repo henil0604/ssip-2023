@@ -74,6 +74,7 @@
 
 <div use:tippy={{ content: speaking ? 'Stop Speaking' : 'Speak', placement: 'bottom' }}>
 	<Button
+		disabled
 		size="sm"
 		variant="ghost"
 		class="w-fit h-fit rounded-full bg-transparent opacity-90 hover:opacity-100 transition-all flex justify-center items-center p-2"

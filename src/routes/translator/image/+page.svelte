@@ -22,6 +22,8 @@
 			multiple: false
 		})) as File | null;
 
+		console.log('file?', file);
+
 		if (!file) {
 			return;
 		}
@@ -51,7 +53,7 @@
 			}
 		});
 
-		console.log(ocrResponse);
+		console.log('ocrResponse?', ocrResponse);
 
 		if (ocrResponse.code === 'UNSUPPORTED_FILE') {
 			toasts.add({

@@ -67,7 +67,7 @@
 	}
 
 	$: if ($input !== '' && browser) {
-		// debouncedTranslate();
+		debouncedTranslate();
 	}
 
 	// input is empty

@@ -54,6 +54,7 @@
     "lucide-svelte": "^0.292.0",
     "natural": "^6.8.0",
     "openai": "^4.19.0",
+    "pdfjs-dist": "^4.0.189",
     "svelte-tippy": "^1.3.2",
     "svelte-toasts": "^1.1.2",
     "tailwind-merge": "^2.0.0",
