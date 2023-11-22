@@ -12,6 +12,7 @@
 		[key: string]: Blob;
 	} = {};
 	export let audio: HTMLAudioElement | null = null;
+	export let disabled = false;
 
 	async function handleSpeak() {
 		speaking = !speaking;
@@ -70,11 +71,22 @@
 		};
 		audio.play();
 	}
+
+	$: if (input.length >= 3000) {
+		disabled = true;
+	} else {
+		disabled = false;
+	}
 </script>
 
-<div use:tippy={{ content: speaking ? 'Stop Speaking' : 'Speak', placement: 'bottom' }}>
+<div
+	use:tippy={{
+		content: disabled ? 'Speak (Disabled)' : speaking ? 'Stop Speaking' : 'Speak',
+		placement: 'bottom'
+	}}
+>
 	<Button
-		disabled
+		bind:disabled
 		size="sm"
 		variant="ghost"
 		class="w-fit h-fit rounded-full bg-transparent opacity-90 hover:opacity-100 transition-all flex justify-center items-center p-2"
