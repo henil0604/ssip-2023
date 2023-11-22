@@ -1,10 +1,17 @@
 <script>
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import '../app.postcss';
 	import Header from './Header.svelte';
 	import 'tippy.js/dist/tippy.css';
+	import { tesseractWorker } from '$lib/store';
+	import { createWorker } from 'tesseract.js';
 
-	$: console.log($page.data);
+	onMount(async () => {
+		console.log('creating tesseract worker...');
+		$tesseractWorker = await createWorker('eng');
+		console.log('tesseract worker created...');
+	});
 </script>
 
 <svelte:head>

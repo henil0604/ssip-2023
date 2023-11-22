@@ -5,7 +5,6 @@
 	import CopyButton from '$lib/components/CopyButton.svelte';
 	import Editor from '$lib/components/Editor.svelte';
 	import FeedbackBlock from '$lib/components/FeedbackBlock.svelte';
-	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
 	import TextToSpeechButton from '$lib/components/TextToSpeechButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Switch } from '$lib/components/ui/switch';
@@ -17,16 +16,13 @@
 	import tippy from 'svelte-tippy';
 	import { writable } from 'svelte/store';
 	import OutputEditorBlock from './OutputEditorBlock.svelte';
+	import LanguageSelectorHeader from '$lib/components/LanguageSelectorHeader.svelte';
 
 	let sourceLanguage = writable<LanguagesInCodeKeys>('en');
 	let targetLanguage = writable<LanguagesInCodeKeys>('gu');
-	let lastSourceLanguage = $sourceLanguage;
-	let lastTargetLanguage = $targetLanguage;
 	let input = writable('');
 	let isBeingTranslated = false;
 	let abortController: AbortController | null = null;
-	let sourceLanguageSelectorComponent: LanguageSelector;
-	let targetLanguageSelectorComponent: LanguageSelector;
 	let options = writable({
 		pureGujarati: false,
 		autoSummarize: false,
@@ -59,6 +55,7 @@
 	});
 	let resizerInterval: NodeJS.Timeout;
 	let referenceId = writable<string | null>(null);
+	let languageSelectorHeaderComponent: LanguageSelectorHeader;
 
 	function setHash(
 		input: string,
@@ -78,13 +75,6 @@
 			noScroll: true,
 			keepFocus: true
 		});
-	}
-
-	function swapLanguages() {
-		let t = $sourceLanguage;
-		$sourceLanguage = $targetLanguage;
-		$targetLanguage = t;
-		return true;
 	}
 
 	$: if ($input !== '' && browser) {
@@ -120,8 +110,8 @@
 
 			setHash(content, $sourceLanguage, $targetLanguage);
 
-			sourceLanguageSelectorComponent.handleSelect($sourceLanguage);
-			targetLanguageSelectorComponent.handleSelect($targetLanguage);
+			languageSelectorHeaderComponent.selectSource($sourceLanguage);
+			languageSelectorHeaderComponent.selectTarget($targetLanguage);
 
 			resizeEditors();
 		}
@@ -182,19 +172,9 @@
 	const debouncedTranslate = debounce(translate, 100);
 
 	sourceLanguage.subscribe(() => {
-		if ($sourceLanguage === $targetLanguage) {
-			$targetLanguage = lastSourceLanguage;
-			targetLanguageSelectorComponent.handleSelect($targetLanguage);
-		}
-		lastSourceLanguage = $sourceLanguage;
 		debouncedTranslate();
 	});
 	targetLanguage.subscribe(() => {
-		if ($sourceLanguage === $targetLanguage) {
-			$sourceLanguage = lastTargetLanguage;
-			sourceLanguageSelectorComponent.handleSelect($sourceLanguage);
-		}
-		lastTargetLanguage = $targetLanguage;
 		debouncedTranslate();
 	});
 
@@ -222,33 +202,11 @@
 
 <div class="flex flex-col">
 	<!-- header -->
-	<div class="min-w-full bg-white flex">
-		<div class="min-w-full flex justify-between items-center gap-3 px-0 pb-3 py-1 relative">
-			<!-- input side -->
-			<div class="">
-				<LanguageSelector
-					bind:this={sourceLanguageSelectorComponent}
-					bind:value={$sourceLanguage}
-				/>
-			</div>
-			<!-- middle -->
-			<div
-				class="max-w-fit flex items-center absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2"
-			>
-				<Button variant="outline" class="h-fit p-0 border-none" on:click={swapLanguages}>
-					<Icon class="text-4xl" icon="gg:swap" />
-				</Button>
-			</div>
-			<!-- output side -->
-			<div class="flex justify-start">
-				<LanguageSelector
-					bind:this={targetLanguageSelectorComponent}
-					bind:value={$targetLanguage}
-					className="flex-row-reverse"
-				/>
-			</div>
-		</div>
-	</div>
+	<LanguageSelectorHeader
+		bind:sourceLanguage={$sourceLanguage}
+		bind:targetLanguage={$targetLanguage}
+		bind:this={languageSelectorHeaderComponent}
+	/>
 
 	<!-- body -->
 	<div class="grid grid-cols-2 gap-7">

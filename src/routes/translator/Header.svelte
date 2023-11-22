@@ -11,23 +11,24 @@
 			icon: 'ion:text',
 			description: 'Translation for 100+ Languages'
 		},
+
+		{
+			name: 'Voice',
+			href: '/translator/voice',
+			icon: 'material-symbols:mic-outline',
+			description: 'Translate through voice'
+		},
 		{
 			name: 'Image',
 			href: '/translator/image',
 			icon: 'bx:image',
-			description: '.png, .jpg'
+			description: '.png, .jpg, .gif'
 		},
 		{
 			name: 'File',
 			href: '/translator/file',
 			icon: 'bx:file',
-			description: 'Translate .pdf, .txt, .docx files'
-		},
-		{
-			name: 'Voice',
-			href: '/translate/voice',
-			icon: 'material-symbols:mic-outline',
-			description: 'Translate through voice'
+			description: 'Translate .pdf, .txt files'
 		}
 	];
 

@@ -118,3 +118,19 @@ export const ResponseCodeMap = {
 
 
 export const DEFAULT_EDITOR_HEIGHT = 170;
+
+// export const OCRSupportedLanguages = (Object.keys(LanguageMap) as LanguagesInHumanReadableKeys[]).filter(e => {
+// 	let supported: LanguagesInHumanReadableKeys[] = ["English", "Gujarati"]
+// 	return supported.includes(e) === true
+// }).map(e => {
+// 	return {
+// 		[e]: LanguageMap[e]
+// 	}
+// });
+
+export const OCRSupportedLanguages = {
+	"English": "en",
+	"Gujarati": "gu"
+}
+
+console.log(OCRSupportedLanguages)
