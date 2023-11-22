@@ -20,8 +20,14 @@
 		<!--  -->
 		<div class="flex flex-col items-center gap-2">
 			<div class="flex justify-center items-center gap-4">
-				<Icon icon="grommet-icons:document-txt" class="text-theme-600" width={70} />
-				<Icon icon="carbon:document-pdf" class="text-theme-600" width={80} />
+				<Icon
+					icon="grommet-icons:document-txt"
+					class="text-theme-600 w-[60px] h-[60px] hover:scale-[1.2] transition-all"
+				/>
+				<Icon
+					icon="carbon:document-pdf"
+					class="text-theme-600 w-[70px] h-[70px] hover:scale-[1.2] transition-all"
+				/>
 			</div>
 			<h1 class="text-2xl">Drag your file here</h1>
 			<p class="text-muted-foreground">OR</p>

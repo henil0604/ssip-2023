@@ -42,14 +42,17 @@
 			}
 		}
 	}
+
+	$: value && resize();
 </script>
 
 <div class={cn('relative', wrapperClass)} style="height: {height}px;">
 	<div
+		id="editArea-{id}"
 		bind:this={editorRef}
 		contenteditable="plaintext-only"
 		class={cn(
-			'w-full h-full break-all flex-grow outline-none px-4 py-3 pr-16 z-[2] absolute top-0 left-0 bg-transparent text-xl',
+			'w-full min-h-fit max-h-fitt break-all flex-grow outline-none px-4 py-3 pr-16 z-[2] absolute top-0 left-0 bg-transparent text-xl',
 			inputClass
 		)}
 		bind:innerText={value}

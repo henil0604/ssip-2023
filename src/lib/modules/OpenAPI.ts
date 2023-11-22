@@ -4,13 +4,14 @@
 
 // import OpenAI API key and Organization Id
 import { OPEN_AI_API_KEY, OPEN_AI_ORGANIZATION_ID } from "$env/static/private";
+import 'openai/shims/node'
 // import OpenAI SDK
 import OpenAI from "openai";
 
 class OpenAPI {
 
     // initiate OpenAI instance
-    private static ai = new OpenAI({
+    public static ai = new OpenAI({
         organization: OPEN_AI_ORGANIZATION_ID,
         apiKey: OPEN_AI_API_KEY
     })

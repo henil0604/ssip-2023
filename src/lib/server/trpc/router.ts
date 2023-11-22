@@ -164,6 +164,20 @@ export const router = t.router({
 		})
 
 	}),
+
+	textToSpeech: publicProcedure.input(z.object({
+		input: z.string()
+	})).mutation(async ({ ctx, input }) => {
+
+		let response = await OpenAPI.ai.audio.speech.create({
+			input: input.input,
+			model: 'tts-1',
+			voice: 'alloy',
+			response_format: 'mp3',
+		}).asResponse()
+
+		return await response.buffer();
+	})
 });
 
 export type Router = typeof router;

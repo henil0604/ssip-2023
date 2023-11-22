@@ -17,6 +17,7 @@
 	import { writable } from 'svelte/store';
 	import OutputEditorBlock from './OutputEditorBlock.svelte';
 	import LanguageSelectorHeader from '$lib/components/LanguageSelectorHeader.svelte';
+	import { redirectToTranslate } from '$lib/modules/redirectToTranslate';
 
 	let sourceLanguage = writable<LanguagesInCodeKeys>('en');
 	let targetLanguage = writable<LanguagesInCodeKeys>('gu');
@@ -57,18 +58,6 @@
 	let referenceId = writable<string | null>(null);
 	let languageSelectorHeaderComponent: LanguageSelectorHeader;
 
-	function setHash(
-		input: string,
-		sourceLanguage: LanguagesInCodeKeys,
-		targetLanguage: LanguagesInCodeKeys
-	) {
-		goto(`#${$sourceLanguage}/${$targetLanguage}/${encodeURIComponent($input)}`, {
-			replaceState: true,
-			noScroll: true,
-			keepFocus: true
-		});
-	}
-
 	function removeHash() {
 		goto('', {
 			replaceState: true,
@@ -78,7 +67,7 @@
 	}
 
 	$: if ($input !== '' && browser) {
-		debouncedTranslate();
+		// debouncedTranslate();
 	}
 
 	// input is empty
@@ -108,7 +97,7 @@
 
 			$input = decodeURIComponent(content);
 
-			setHash(content, $sourceLanguage, $targetLanguage);
+			redirectToTranslate($input, $sourceLanguage, $targetLanguage);
 
 			languageSelectorHeaderComponent.selectSource($sourceLanguage);
 			languageSelectorHeaderComponent.selectTarget($targetLanguage);
@@ -164,12 +153,12 @@
 
 		$referenceId = translationResponse.data?.referenceId || null;
 
-		setHash($input, $sourceLanguage, $targetLanguage);
+		redirectToTranslate($input, $sourceLanguage, $targetLanguage);
 
 		isBeingTranslated = false;
 	}
 
-	const debouncedTranslate = debounce(translate, 100);
+	const debouncedTranslate = debounce(translate, 400);
 
 	sourceLanguage.subscribe(() => {
 		debouncedTranslate();

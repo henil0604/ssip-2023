@@ -6,6 +6,8 @@
 	import 'tippy.js/dist/tippy.css';
 	import { tesseractWorker } from '$lib/store';
 	import { createWorker } from 'tesseract.js';
+	import { ToastContainer, FlatToast } from 'svelte-toasts';
+	import { browser } from '$app/environment';
 
 	onMount(async () => {
 		console.log('creating tesseract worker...');
@@ -26,6 +28,13 @@
 		rel="stylesheet"
 	/>
 </svelte:head>
+
+{#if browser}
+	<ToastContainer placement="bottom-right" let:data>
+		<FlatToast {data} />
+		<!-- Provider template for your toasts -->
+	</ToastContainer>
+{/if}
 
 <div class="flex flex-col min-h-full">
 	<Header />
