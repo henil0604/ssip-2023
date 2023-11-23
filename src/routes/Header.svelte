@@ -11,10 +11,6 @@
 			name: 'Translator',
 			href: '/translator',
 			activeForChildren: true
-		},
-		{
-			name: 'Solution Generator',
-			href: '/solution-generator'
 		}
 	];
 

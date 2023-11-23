@@ -142,9 +142,9 @@
 						class="text-theme-600 w-[70px] h-[70px] hover:scale-[1.2] transition-all"
 					/>
 				</div>
-				<h1 class="text-2xl">Select file here</h1>
+				<h1 class="text-2xl">Supports .TXT and .PDF files</h1>
 				<Button on:click={handleUpload} variant="default" size="lg" class="text-lg"
-					>Upload from your computer</Button
+					>Select files</Button
 				>
 			{:else}
 				<Icon icon="svg-spinners:blocks-wave" class="text-theme-600" width={100} />

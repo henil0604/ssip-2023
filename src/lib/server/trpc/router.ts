@@ -1,12 +1,11 @@
-import { publicProcedure, t } from '$lib/server/trpc';
+import { privateProcedure, publicProcedure, t } from '$lib/server/trpc';
 import * as Schema from '$lib/const/schema';
 import generateId from '$lib/modules/generateId';
 import { translate } from '$lib/server/modules/translate';
 import OpenAPI from '$lib/modules/OpenAPI';
 import { LanguageMap } from '$lib/const';
-import { string, z } from 'zod';
+import { map, string, z } from 'zod';
 import { toFile } from 'openai';
-import ISO6391 from 'iso-639-1';
 import type OpenAI from 'openai';
 
 export const router = t.router({
@@ -18,8 +17,22 @@ export const router = t.router({
 
 			console.log(`REF: ${referenceId}`);
 
+			const user = ctx.session?.user || null;
+
 			let inputText = input.input;
 			console.log("inputText?", inputText)
+
+			const caller = router.createCaller(ctx);
+
+			// const preReplacerAddon = user ? (await caller.getUserCustomReplacer({
+			// 	language: input.sourceLanguage
+			// }))?.map as Record<string, string> || {} : {};
+			const postReplacerAddon = user ? (await caller.getUserCustomReplacer({
+				language: input.targetLanguage
+			}))?.map as Record<string, string> || {} : {};
+
+			console.log("postReplacerAddon?", postReplacerAddon);
+
 			if ((input.features.autoSummarize || input.features.autoBulletins) && input.sourceLanguage !== LanguageMap["English"]) {
 				const translationResponse = await translate({
 					input: input.input,
@@ -77,7 +90,7 @@ export const router = t.router({
 				},
 				databaseAddon: {
 					preReplacer: {},
-					postReplacer: {}
+					postReplacer: postReplacerAddon
 				}
 			});
 			let originalTranslation = originalTranslationResponse.result
@@ -95,7 +108,7 @@ export const router = t.router({
 					},
 					databaseAddon: {
 						preReplacer: {},
-						postReplacer: {}
+						postReplacer: postReplacerAddon
 					}
 				})
 				summarizedTranslation = summarizedTranslationResponse.result;
@@ -113,7 +126,7 @@ export const router = t.router({
 					},
 					databaseAddon: {
 						preReplacer: {},
-						postReplacer: {}
+						postReplacer: postReplacerAddon
 					}
 				})
 				bulletinedTranslation = bulletinedTranslationResponse.result;
@@ -239,6 +252,106 @@ export const router = t.router({
 			}
 
 		}
+	}),
+
+	getUserCustomReplacer: privateProcedure.input(z.object({
+		language: z.string()
+	})).query(async ({ ctx, input }) => {
+
+		const user = ctx.session.user;
+
+		let customReplacer = await ctx.prisma.customReplacer.findFirst({
+			where: {
+				user: {
+					id: user.id
+				},
+				language: input.language
+			}
+		})
+
+		if (customReplacer === null) {
+			customReplacer = await ctx.prisma.customReplacer.create({
+				data: {
+					user: {
+						connect: {
+							id: user.id
+						}
+					},
+					language: input.language,
+					map: {}
+				}
+			})
+		}
+
+		return customReplacer;
+	}),
+
+	addToCustomReplacer: privateProcedure.input(z.object({
+		language: z.string(),
+		key: z.string(),
+		value: z.string()
+	})).query(async ({ ctx, input }) => {
+
+		const user = ctx.session.user;
+
+		console.log("input?", input);
+		console.log("user?", user);
+
+		const caller = router.createCaller(ctx);
+
+		let oldCustomReplacer = await caller.getUserCustomReplacer({
+			language: input.language
+		})
+
+		let newCustomReplacerMap = {
+			...oldCustomReplacer.map as { [key: string]: string },
+			[input.key]: input.value
+		}
+
+		let customReplacer = await ctx.prisma.customReplacer.update({
+			where: {
+				id: oldCustomReplacer.id,
+			},
+			data: {
+				map: newCustomReplacerMap
+			}
+		})
+
+		return true;
+	}),
+
+	deleteInCustomReplacer: privateProcedure.input(z.object({
+		language: z.string(),
+		key: z.string(),
+	})).query(async ({ ctx, input }) => {
+
+		const user = ctx.session.user;
+
+		console.log("user?", user);
+		console.log("input?", input);
+
+		const caller = router.createCaller(ctx);
+
+		let oldCustomReplacer = await caller.getUserCustomReplacer({
+			language: input.language
+		})
+
+		let newMap = oldCustomReplacer.map as Record<string, string>;
+
+		console.log("before?", newMap);
+		delete newMap[input.key];
+		console.log("after?", newMap);
+
+		let customReplacer = await ctx.prisma.customReplacer.update({
+			where: {
+				id: oldCustomReplacer.id,
+			},
+			data: {
+				map: newMap
+			}
+		})
+
+		return true;
 	})
 });
 

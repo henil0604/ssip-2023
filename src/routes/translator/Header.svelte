@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import MyDictionary from '$lib/components/MyDictionary.svelte';
+	import CustomReplacer from '$lib/components/CustomReplacer.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import Icon from '@iconify/svelte';
 
@@ -56,7 +56,7 @@
 	</div>
 
 	<div>
-		<MyDictionary />
+		<CustomReplacer />
 	</div>
 </div>
 

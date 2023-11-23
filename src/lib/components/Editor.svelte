@@ -59,15 +59,13 @@
 	/>
 
 	{#if value !== '' && allowClearButton}
-		<div use:tippy={{ content: 'Clear', placement: 'bottom' }}>
-			<Button
-				class="outline-none absolute top-0 right-0 z-[2] hover:bg-transparent"
-				on:click={() => (value = '')}
-				variant="ghost"
-			>
-				<Icon class="text-lg" icon="mdi:close" />
-			</Button>
-		</div>
+		<Button
+			class="outline-none absolute top-0 right-0 z-[2] hover:bg-transparent"
+			on:click={() => (value = '')}
+			variant="ghost"
+		>
+			<Icon class="text-lg" icon="mdi:close" />
+		</Button>
 	{/if}
 
 	<slot />

@@ -39,16 +39,25 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid()) @map("_id")
-  email         String?   @unique
-  username      String?   @unique
-  emailVerified DateTime?
-  image         String?
-  name          String?
+  id              String           @id @default(cuid()) @map("_id")
+  email           String?          @unique
+  username        String?          @unique
+  emailVerified   DateTime?
+  image           String?
+  name            String?
   // add extra user properties here...
   // eg. gender, bio...
-  accounts      Account[]
-  sessions      Session[]
+  accounts        Account[]
+  sessions        Session[]
+  customReplacers CustomReplacer[]
+}
+
+model CustomReplacer {
+  id       String  @id @default(cuid()) @map("_id")
+  user     User?   @relation(fields: [userId], references: [id])
+  userId   String?
+  language String
+  map      Json
 }
 
 model VerificationToken {
