@@ -17,6 +17,7 @@
 	export let readonly = false;
 
 	export let editorRef: HTMLDivElement | null = null;
+	export let maxEditorHeight: number = 0;
 
 	export let allowClearButton = true;
 	export let autoExpand = true;
@@ -39,7 +40,10 @@
 			height = defaultHeight;
 		} else {
 			if (autoExpand) {
-				height = Math.max(editorRef?.scrollHeight || 0, defaultHeight);
+				height = Math.min(
+					Math.max(editorRef?.scrollHeight || 0, defaultHeight),
+					maxEditorHeight || Infinity
+				);
 			}
 		}
 	}
@@ -48,12 +52,19 @@
 </script>
 
 <div class={cn('relative', wrapperClass)} style="height: {height}px;">
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
 		id="editArea-{id}"
+		on:keyup
+		on:keydown
+		on:click
+		on:input
+		on:change
 		bind:this={editorRef}
+		style="max-height: {maxEditorHeight == 0 ? 'auto' : `${maxEditorHeight}px`};"
 		contenteditable="plaintext-only"
 		class={cn(
-			'w-full min-h-fit max-h-fitt break-words flex-grow outline-none px-4 py-3 pr-16 z-[2] absolute top-0 left-0 bg-transparent text-xl',
+			'w-full min-h-fit break-words flex-grow outline-none px-4 py-3 pr-16 z-[2] absolute top-0 left-0 bg-transparent text-xl overflow-auto',
 			inputClass
 		)}
 		bind:innerText={value}

@@ -15,6 +15,10 @@
 		{
 			name: 'Question Generator',
 			href: '/question-generator'
+		},
+		{
+			name: 'AskBot',
+			href: '/askbot'
 		}
 	];
 
@@ -26,9 +30,7 @@
 	let accountDropdownOpen: boolean = false;
 </script>
 
-<div
-	class="w-full bg-white h-fit px-4 py-3 sticky top-0 shadow flex items-center justify-center z-[10]"
->
+<div class="w-full bg-white h-fit px-4 py-3 shadow flex items-center justify-center z-[10]">
 	<!-- head -->
 	<div class="">
 		<a href="/">

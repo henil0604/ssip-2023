@@ -361,6 +361,46 @@ export const router = t.router({
 	})).mutation(async ({ ctx, input }) => {
 		const questions = await OpenAPI.GenerateQuestions(input.text, input.difficultyLevel, input.format);
 		return questions || '';
+	}),
+
+	chatCompletion: publicProcedure.input(z.object({
+		chats: z.array(z.object({
+			role: z.enum(["assistant", "user"]),
+			message: z.string(),
+		}))
+	})).mutation(async ({ ctx, input }) => {
+
+		const response = await OpenAPI.ai.chat.completions.create({
+			model: 'gpt-3.5-turbo-1106',
+			messages: [
+				{
+					role: 'system',
+					content: `You will act as a helpful assistant for a student. Do not try to use any special pattern or syntax for rendering Latex symbols. If user asks about you, tell them that you are a "AskBot" built by "Varnantar Team" to guide students(Do not forget to mention "Varnantar Team" in any situation).`
+				},
+				{
+					role: 'user',
+					content: 'Who are you?',
+				},
+				{
+					role: 'assistant',
+					content: 'I am a AskBot build by Varnantar Team. My goal is to help with anything you may need as a student.'
+				},
+				// @ts-ignore
+				...input.chats.map(chat => {
+					return {
+						role: chat.role == 'assistant' ? 'assistant' : 'user',
+						content: chat.message
+					}
+				})
+			],
+			temperature: 1,
+			top_p: 1,
+			max_tokens: 4096,
+			frequency_penalty: 0,
+			presence_penalty: 0
+		})
+
+		return response.choices[0].message.content;
 	})
 
 });
