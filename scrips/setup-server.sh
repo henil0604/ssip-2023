@@ -23,6 +23,7 @@ cd ~
 mkdir app
 cd app
 git clone https://github.com/henil0604/ssip-2023 .
+git checkout $1
 
 # install pnpm & pm2
 npm install -g pnpm pm2
