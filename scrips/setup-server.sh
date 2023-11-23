@@ -4,26 +4,19 @@ sudo apt update -y
 # upgrade
 sudo apt upgrade -y
 
-# install nginx and git
-sudo apt install -y nginx git
+# install nginx
+sudo apt install -y nginx
 
 # install nvm
 sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | sudo bash
 
-# init nvm
+# load nvm
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # install node
 nvm install 20.8.1
 nvm use 20.8.1
-
-# setup dir
-cd ~
-mkdir app
-cd app
-git clone https://github.com/henil0604/ssip-2023 .
-git checkout $1
 
 # install pnpm & pm2
 npm install -g pnpm pm2
