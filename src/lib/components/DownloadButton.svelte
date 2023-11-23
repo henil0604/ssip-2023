@@ -27,7 +27,7 @@
 <div use:tippy={{ content: 'Download', placement: 'bottom' }}>
 	<Button
 		variant="ghost"
-		class="flex justify-center items-center bg-transparent opacity-90 hover:opacity-100 transition-all p-1"
+		class="w-fit h-fit rounded-full flex justify-center items-center bg-transparent opacity-90 hover:opacity-100 transition-all p-1"
 		on:click={() => {
 			downloadTxtFile(text);
 		}}

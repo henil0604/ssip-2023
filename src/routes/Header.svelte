@@ -11,6 +11,10 @@
 			name: 'Translator',
 			href: '/translator',
 			activeForChildren: true
+		},
+		{
+			name: 'Question Generator',
+			href: '/question-generator'
 		}
 	];
 

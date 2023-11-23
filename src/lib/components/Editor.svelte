@@ -9,7 +9,8 @@
 	import generateId from '$lib/modules/generateId';
 
 	export let value = '';
-	export let height: number = DEFAULT_EDITOR_HEIGHT;
+	export let defaultHeight = DEFAULT_EDITOR_HEIGHT;
+	export let height: number = defaultHeight;
 
 	export let wrapperClass = '';
 	export let inputClass = '';
@@ -35,10 +36,10 @@
 
 	export function resize() {
 		if (value.trim() === '') {
-			height = DEFAULT_EDITOR_HEIGHT;
+			height = defaultHeight;
 		} else {
 			if (autoExpand) {
-				height = Math.max(editorRef?.scrollHeight || 0, DEFAULT_EDITOR_HEIGHT);
+				height = Math.max(editorRef?.scrollHeight || 0, defaultHeight);
 			}
 		}
 	}

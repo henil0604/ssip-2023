@@ -7,6 +7,7 @@ import { OPEN_AI_API_KEY, OPEN_AI_ORGANIZATION_ID } from "$env/static/private";
 import 'openai/shims/node'
 // import OpenAI SDK
 import OpenAI from "openai";
+import type { QuestionGeneratorDifficultyLevels, QuestionGeneratorFormats } from "$lib/const";
 
 class OpenAPI {
 
@@ -61,21 +62,29 @@ class OpenAPI {
     /*
         generates questions from given input
     */
-    public static async GenerateQuestions(text: string) {
+    public static async GenerateQuestions(text: string, level: (typeof QuestionGeneratorDifficultyLevels)[number] = 'Medium', format: (typeof QuestionGeneratorFormats)[number] = 'Short Questions') {
         if (text.trim() === '') return null;
 
-        const response = await OpenAPI.ai.completions.create({
-            model: 'text-davinci-003',
-            prompt: `Generate questions from the paragraph without redundancy or duplication.\ntext: ${text}\nQuestions:\n`,
+        const response = await OpenAPI.ai.chat.completions.create({
+            model: 'gpt-3.5-turbo-1106',
+            messages: [
+                {
+                    role: 'system',
+                    content: `From now on you will ONLY Generate questions from the paragraph without redundancy or duplication. Make sure to have index of each question. You will NOT act as assistance in any case. If input paragraph does not have any reasonable questions to be generated, simply say 'Unable to Generate Questions'.\nDifficulty Level: ${level}\nQuestion Format:${format}`
+                },
+                {
+                    role: 'user',
+                    content: `${text}`
+                }
+            ],
             temperature: 1,
             top_p: 1,
-            max_tokens: 2048,
-            best_of: 1,
+            max_tokens: 4096,
             frequency_penalty: 0,
             presence_penalty: 0
         })
 
-        return response.choices[0].text;
+        return response.choices[0].message.content;
     }
 
 }

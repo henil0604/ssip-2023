@@ -60,6 +60,12 @@ const config = {
 			fontFamily: {
 				sans: [...fontFamily.sans]
 			}
+		},
+		keyframes: {
+			'back-and-forth-from-left-to-right': {
+				'0%, 100%': { transform: 'translateX(0)' },
+				'50%': { transform: 'translateX(0.4rem)' },
+			}
 		}
 	}
 };

@@ -123,3 +123,6 @@ export const GoogleLanguageCodeToInternationalLanguageCode = {
 	[LanguageMap["English"]]: "eng",
 	[LanguageMap["Gujarati"]]: "guj"
 } as const
+
+export let QuestionGeneratorDifficultyLevels = ['Easy', 'Medium', 'Hard'] as const;
+export let QuestionGeneratorFormats = ['Short Questions', 'Long Questions', 'MCQs', 'True/False', 'Fill the Blanks'] as const;

@@ -3,7 +3,7 @@ import * as Schema from '$lib/const/schema';
 import generateId from '$lib/modules/generateId';
 import { translate } from '$lib/server/modules/translate';
 import OpenAPI from '$lib/modules/OpenAPI';
-import { LanguageMap } from '$lib/const';
+import { LanguageMap, QuestionGeneratorDifficultyLevels, QuestionGeneratorFormats } from '$lib/const';
 import { map, string, z } from 'zod';
 import { toFile } from 'openai';
 import type OpenAI from 'openai';
@@ -352,7 +352,17 @@ export const router = t.router({
 		})
 
 		return true;
+	}),
+
+	generateQuestions: publicProcedure.input(z.object({
+		text: z.string(),
+		difficultyLevel: z.enum(QuestionGeneratorDifficultyLevels),
+		format: z.enum(QuestionGeneratorFormats)
+	})).mutation(async ({ ctx, input }) => {
+		const questions = await OpenAPI.GenerateQuestions(input.text, input.difficultyLevel, input.format);
+		return questions || '';
 	})
+
 });
 
 export type Router = typeof router;
