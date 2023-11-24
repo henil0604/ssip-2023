@@ -27,7 +27,7 @@ pnpm run build
 # Function to add Nginx proxy configuration
 add_nginx_proxy() {
     # Check if both arguments are provided
-    if [ "$#" -ne 2 ]; then
+    if [ "$#" -ne 3 ]; then
         echo "Usage: add_nginx_proxy <source_port> <target_port> <domain>"
         return 1
     fi
