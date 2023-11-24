@@ -367,8 +367,15 @@ export const router = t.router({
 		chats: z.array(z.object({
 			role: z.enum(["assistant", "user"]),
 			message: z.string(),
-		}))
+		})),
+		targetLanguage: z.nativeEnum(LanguageMap)
 	})).mutation(async ({ ctx, input }) => {
+
+		const caller = router.createCaller({
+			...ctx
+		});
+
+		console.log("message?", input.chats.at(-1)?.message)
 
 		const response = await OpenAPI.ai.chat.completions.create({
 			model: 'gpt-3.5-turbo-1106',
@@ -398,9 +405,36 @@ export const router = t.router({
 			max_tokens: 4096,
 			frequency_penalty: 0,
 			presence_penalty: 0
+		});
+
+		const message = response.choices[0].message.content || 'I could not answer that';
+
+		console.log("response?", message);
+
+		if (input.targetLanguage === 'en') {
+			return {
+				original: message,
+				translated: null
+			};
+		}
+
+		const translatedResponse = await caller.translate({
+			sourceLanguage: 'en',
+			targetLanguage: input.targetLanguage,
+			features: {
+				pureGujarati: false,
+				autoBulletins: false,
+				autoSummarize: false,
+			},
+			input: message
 		})
 
-		return response.choices[0].message.content;
+		const translatedMessage: string = translatedResponse.data?.output.original || 'I could not answer that';
+
+		return {
+			original: message,
+			translated: translatedMessage
+		};
 	})
 
 });

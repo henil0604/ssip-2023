@@ -5,6 +5,7 @@
 	import LanguageSelector from '$lib/components/LanguageSelector.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
 	import { Button } from '$lib/components/ui/button';
+	import type { LanguagesInCodeKeys } from '$lib/const';
 	import { trpc } from '$lib/trpc/client';
 	import Icon from '@iconify/svelte';
 	import { writable } from 'svelte/store';
@@ -13,10 +14,12 @@
 	let isLoading = false;
 	let loadingChatIndex: number | null = null;
 	let chatBlockRef: HTMLDivElement;
+	let sourceLanguage = writable<LanguagesInCodeKeys>('en');
 
 	type Chat = {
 		role: 'assistant' | 'user';
 		message: string;
+		translated: string | null;
 		show: boolean;
 		send: boolean;
 		ref?: HTMLDivElement;
@@ -28,7 +31,8 @@
 			message:
 				'Hey! AskBot here! I am here to assist you. You can select the output Language From the top right corner.',
 			show: true,
-			send: false
+			send: false,
+			translated: null
 		}
 	]);
 
@@ -56,13 +60,15 @@
 			message: $message,
 			role: 'user',
 			send: true,
-			show: true
+			show: true,
+			translated: null
 		});
 		loadingChatIndex = addChat({
 			message: '',
 			role: 'assistant',
 			send: false,
-			show: true
+			show: true,
+			translated: null
 		});
 
 		isLoading = true;
@@ -72,14 +78,16 @@
 		let constructedChats = constructChats();
 
 		const chatResponse = await trpc().chatCompletion.mutate({
-			chats: constructedChats
+			chats: constructedChats,
+			targetLanguage: $sourceLanguage
 		});
 
 		console.log('chatResponse?', chatResponse);
 
 		$chats[loadingChatIndex] = {
 			...$chats[loadingChatIndex],
-			message: chatResponse || 'No Response',
+			message: chatResponse.original || 'No Response',
+			translated: chatResponse.translated,
 			send: true,
 			show: true
 		};
@@ -114,7 +122,7 @@
 				<Icon class="text-[40px] text-black" icon="fluent:bot-sparkle-20-regular" />
 				<h1 class="font-semibold text-xl"><span class="text-theme-600">Ask</span>Bot</h1>
 			</div>
-			<LanguageSelector />
+			<LanguageSelector bind:value={$sourceLanguage} />
 		</div>
 		<div
 			bind:this={chatBlockRef}
@@ -160,7 +168,7 @@
 								{#if loadingChatIndex === index}
 									<Icon icon="eos-icons:three-dots-loading" class="text-[30px]" />
 								{:else}
-									{@html chat.message.replaceAll('\n', '<br />')}
+									{@html (chat.translated || chat.message).replaceAll('\n', '<br />')}
 								{/if}
 							</div>
 						</div>
