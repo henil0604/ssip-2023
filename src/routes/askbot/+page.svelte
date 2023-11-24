@@ -9,6 +9,8 @@
 	import { trpc } from '$lib/trpc/client';
 	import Icon from '@iconify/svelte';
 	import { writable } from 'svelte/store';
+	import '$lib/assets/prism.css';
+	import '$lib/assets/prism.js';
 
 	let message = writable('');
 	let isLoading = false;
@@ -22,6 +24,7 @@
 		translated: string | null;
 		show: boolean;
 		send: boolean;
+		rendered: string;
 		ref?: HTMLDivElement;
 	};
 
@@ -32,7 +35,9 @@
 				'Hey! AskBot here! I am here to assist you. You can select the output Language From the top right corner.',
 			show: true,
 			send: false,
-			translated: null
+			translated: null,
+			rendered:
+				'Hey! AskBot here! I am here to assist you. You can select the output Language From the top right corner.'
 		}
 	]);
 
@@ -61,14 +66,16 @@
 			role: 'user',
 			send: true,
 			show: true,
-			translated: null
+			translated: null,
+			rendered: $message
 		});
 		loadingChatIndex = addChat({
 			message: '',
 			role: 'assistant',
 			send: false,
 			show: true,
-			translated: null
+			translated: null,
+			rendered: ''
 		});
 
 		isLoading = true;
@@ -89,7 +96,10 @@
 			message: chatResponse.original || 'No Response',
 			translated: chatResponse.translated,
 			send: true,
-			show: true
+			show: true,
+			rendered: chatResponse.rendered
+				.replace(/>{@html `<code class="language-/g, '><code class="language-')
+				.replace(/<\/code>`}<\/pre>/g, '</code></pre>')
 		};
 
 		let lastLoadingChatIndex = loadingChatIndex;
@@ -167,8 +177,10 @@
 							<div class="">
 								{#if loadingChatIndex === index}
 									<Icon icon="eos-icons:three-dots-loading" class="text-[30px]" />
+								{:else if chat.rendered}
+									{@html chat.rendered}
 								{:else}
-									{@html (chat.translated || chat.message).replaceAll('\n', '<br />')}
+									{(chat.translated || chat.message).replaceAll('\n', '<br />')}
 								{/if}
 							</div>
 						</div>

@@ -7,6 +7,7 @@ import { LanguageMap, QuestionGeneratorDifficultyLevels, QuestionGeneratorFormat
 import { map, string, z } from 'zod';
 import { toFile } from 'openai';
 import type OpenAI from 'openai';
+import { compile, escapeSvelte } from 'mdsvex';
 
 export const router = t.router({
 	translate: publicProcedure
@@ -382,7 +383,15 @@ export const router = t.router({
 			messages: [
 				{
 					role: 'system',
-					content: `You will act as a helpful assistant for a student. Do not try to use any special pattern or syntax for rendering Latex symbols. If user asks about you, tell them that you are a "AskBot" built by "Varnantar Team" to guide students(Do not forget to mention "Varnantar Team" in any situation).`
+					content: `You will act as a helpful assistant for a student. If user asks about you, tell them that you are a "AskBot" built by "Varnantar Team" to guide students(Do not forget to mention "Varnantar Team" in any situation). Your answer format must be in mdsvex. try to use katex when possible and when needed (like in math equations).
+
+Metadata (This list/info must NOT affect your response in any ways)
+- Target Language: ${input.targetLanguage} (do NOT respond in this language, only respond in ENGLISH)
+
+Instructions:
+- You will always respond in English
+${input.targetLanguage !== 'en' ? `- if the user asked about programming code in the response only and only then say the user that currently rendering programming code in other social languages is not supported and also does not make any sense.` : ''}
+					`
 				},
 				{
 					role: 'user',
@@ -414,7 +423,8 @@ export const router = t.router({
 		if (input.targetLanguage === 'en') {
 			return {
 				original: message,
-				translated: null
+				translated: null,
+				rendered: (await compile(escapeSvelte(message)))?.code || '',
 			};
 		}
 
@@ -429,11 +439,12 @@ export const router = t.router({
 			input: message
 		})
 
-		const translatedMessage: string = translatedResponse.data?.output.original || 'I could not answer that';
+		let translatedMessage: string = translatedResponse.data?.output.original || 'I could not answer that';
 
 		return {
 			original: message,
-			translated: translatedMessage
+			translated: translatedMessage,
+			rendered: (await compile(escapeSvelte(translatedMessage)))?.code || '',
 		};
 	})
 
