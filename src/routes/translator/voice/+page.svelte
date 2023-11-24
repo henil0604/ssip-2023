@@ -6,7 +6,6 @@
 	import Icon from '@iconify/svelte';
 	import { writable } from 'svelte/store';
 	import { trpc } from '$lib/trpc/client';
-	import ISO6391 from 'iso-639-1';
 	import { toasts } from 'svelte-toasts';
 	import { redirectToTranslate } from '$lib/modules/redirectToTranslate';
 
