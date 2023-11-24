@@ -9,8 +9,6 @@
 	import { trpc } from '$lib/trpc/client';
 	import Icon from '@iconify/svelte';
 	import { writable } from 'svelte/store';
-	import '$lib/assets/prism.css';
-	import '$lib/assets/prism.js';
 
 	let message = writable('');
 	let isLoading = false;
@@ -174,7 +172,7 @@
 								{isUser && user ? user.name : 'AskBot'}
 							</div>
 							<!-- message -->
-							<div class="">
+							<div class="block">
 								{#if loadingChatIndex === index}
 									<Icon icon="eos-icons:three-dots-loading" class="text-[30px]" />
 								{:else if chat.rendered}

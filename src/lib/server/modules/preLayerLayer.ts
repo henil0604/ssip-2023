@@ -29,7 +29,7 @@ export async function preReplacerLayer(options: PreLayerOptions): Promise<PreLay
 	for (const search in database) {
 		const replacement = database[search];
 
-		options.input = options.input.replace(new RegExp(search, 'g'), replacement);
+		options.input = options.input.replace(new RegExp(search, 'gi'), replacement);
 	}
 
 	return {
