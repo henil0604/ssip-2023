@@ -42,7 +42,7 @@
 	<div class="flex-grow flex justify-end gap-3" />
 
 	<!-- tail -->
-	<div class="flex justify-end items-center gap-3">
+	<div class="flex justify-end items-center gap-5">
 		{#each links as link}
 			{@const isActive =
 				link.href === $page.url.pathname ||
