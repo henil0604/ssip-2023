@@ -71,6 +71,6 @@ local DOMAIN="varnantar.henil.xyz"
 add_nginx_proxy $SOURCE_PORT $TARGET_PORT $DOMAIN
 
 # start pm2 process
-pm2 start npm --name "varnantar" -- run preview
+pm2 start npm --name "varnantar" -- run preview --port 3001
 
 echo "DONE"
