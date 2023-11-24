@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import CustomReplacer from '$lib/components/CustomReplacer.svelte';
+	import MyBookmarks from '$lib/components/MyBookmarks.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import Icon from '@iconify/svelte';
 
@@ -33,6 +34,8 @@
 	];
 
 	$: selectedDescription = modes.find((e) => e.href === $page.url.pathname)?.description || '';
+
+	$: user = $page.data.session?.user;
 </script>
 
 <div class="w-full flex justify-between items-center">
@@ -55,8 +58,11 @@
 		{/each}
 	</div>
 
-	<div>
-		<CustomReplacer />
+	<div class="flex gap-1">
+		{#if user}
+			<CustomReplacer />
+			<MyBookmarks />
+		{/if}
 	</div>
 </div>
 

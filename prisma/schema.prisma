@@ -50,6 +50,8 @@ model User {
   accounts        Account[]
   sessions        Session[]
   customReplacers CustomReplacer[]
+  histories       History[]
+  Bookmark        Bookmark[]
 }
 
 model CustomReplacer {
@@ -81,7 +83,11 @@ model History {
 
   createdAt DateTime @default(now())
 
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
   feedbacks Feedback[]
+  bookmarks Bookmark[]
 }
 
 model Feedback {
@@ -103,4 +109,20 @@ enum HistoryType {
   TRANSLATION
   QUESTION_GENERATOR
   SOLUTION_GENERATOR
+}
+
+model Bookmark {
+  id             String @id @default(cuid()) @map("_id")
+  sourceLanguage String
+  targetLanguage String
+  input          String
+  output         String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  history   History @relation(fields: [historyId], references: [id])
+  historyId String
+
+  createdAt DateTime @default(now())
 }

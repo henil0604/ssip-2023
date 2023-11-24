@@ -8,12 +8,14 @@ import { map, string, z } from 'zod';
 import { toFile } from 'openai';
 import type OpenAI from 'openai';
 import { compile, escapeSvelte } from 'mdsvex';
+import input from 'postcss/lib/input';
 
 export const router = t.router({
 	translate: publicProcedure
 		.input(Schema.translate.input)
 		.output(Schema.translate.output)
 		.mutation(async ({ ctx, input }) => {
+
 			const referenceId = generateId();
 
 			console.log(`REF: ${referenceId}`);
@@ -133,16 +135,21 @@ export const router = t.router({
 				bulletinedTranslation = bulletinedTranslationResponse.result;
 			}
 
-			ctx.prisma.history.create({
+			await ctx.prisma.history.create({
 				data: {
 					id: referenceId,
 					input: input.input,
 					originalTranslation: originalTranslation,
 					summarizedTranslation: summarizedTranslation,
 					bulletinedTranslation: bulletinedTranslation,
-					type: 'TRANSLATION'
+					type: 'TRANSLATION',
+					user: user ? {
+						connect: {
+							id: user.id
+						}
+					} : undefined
 				}
-			}).then(() => null)
+			}).then(console.log)
 
 			return {
 				error: false,
@@ -446,6 +453,73 @@ ${input.targetLanguage !== 'en' ? `- if the user asked about programming code in
 			translated: translatedMessage,
 			rendered: (await compile(escapeSvelte(translatedMessage)))?.code || '',
 		};
+	}),
+
+	addToBookmark: privateProcedure.input(z.object({
+		input: z.string(),
+		output: z.string(),
+		sourceLanguage: z.nativeEnum(LanguageMap),
+		targetLanguage: z.nativeEnum(LanguageMap),
+		historyId: z.string()
+	})).mutation(async ({ ctx, input }) => {
+
+		const user = ctx.session.user
+
+		return ctx.prisma.bookmark.create({
+			data: {
+				input: input.input,
+				output: input.output,
+				sourceLanguage: input.sourceLanguage,
+				targetLanguage: input.targetLanguage,
+				user: {
+					connect: {
+						id: user.id
+					}
+				},
+				history: {
+					connect: {
+						id: input.historyId
+					}
+				}
+			}
+		})
+	}),
+
+	getUserBookmarks: privateProcedure.query(async ({ ctx, input }) => {
+		const user = ctx.session.user;
+
+		let bookmarks = await ctx.prisma.bookmark.findMany({
+			where: {
+				user: {
+					id: user.id
+				},
+			}
+		})
+
+		return bookmarks;
+	}),
+
+	deleteBookmark: privateProcedure.input(z.object({
+		historyId: z.string()
+	})).query(async ({ ctx, input }) => {
+
+		const user = ctx.session.user;
+
+		console.log("user?", user);
+		console.log("input?", input);
+
+		await ctx.prisma.bookmark.deleteMany({
+			where: {
+				history: {
+					id: input.historyId
+				},
+				user: {
+					id: user.id
+				}
+			}
+		});
+
+		return 1;
 	})
 
 });

@@ -19,10 +19,11 @@
 	import LanguageSelectorHeader from '$lib/components/LanguageSelectorHeader.svelte';
 	import { redirectToTranslate } from '$lib/modules/redirectToTranslate';
 	import DownloadButton from '$lib/components/DownloadButton.svelte';
+	import BookMarkButton from '$lib/components/BookmarkButton.svelte';
+	import { input } from '$lib/store';
 
 	let sourceLanguage = writable<LanguagesInCodeKeys>('en');
 	let targetLanguage = writable<LanguagesInCodeKeys>('gu');
-	let input = writable('');
 	let isBeingTranslated = false;
 	let abortController: AbortController | null = null;
 	let options = writable({
@@ -31,11 +32,11 @@
 		autoBulletins: false
 	});
 	let output = writable<{
-		original?: string;
+		original: string;
 		summarized?: string;
 		bulletined?: string;
 	}>({
-		original: undefined
+		original: ''
 	});
 	let editorHeights = writable({
 		input: DEFAULT_EDITOR_HEIGHT,
@@ -188,6 +189,8 @@
 	});
 
 	$: console.log($output);
+
+	$: user = $page.data.session?.user;
 </script>
 
 <div class="flex flex-col">
@@ -307,6 +310,15 @@
 					<DownloadButton bind:text={$output.original} />
 					<TextToSpeechButton bind:input={$output.original} />
 					<CopyButton bind:input={$output.original} />
+					{#if user && $output.original?.trim() !== '' && $input.trim() !== ''}
+						<BookMarkButton
+							bind:input={$input}
+							bind:output={$output.original}
+							bind:sourceLanguage={$sourceLanguage}
+							bind:targetLanguage={$targetLanguage}
+							bind:historyId={$referenceId}
+						/>
+					{/if}
 				</svelte:fragment>
 			</EditorBlockWrapper>
 
