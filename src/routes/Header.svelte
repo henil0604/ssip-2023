@@ -58,7 +58,7 @@
 		{/each}
 
 		<!-- Login -->
-		<!-- {#if !$page.data.session}
+		{#if !$page.data.session}
 			<Button
 				size="sm"
 				on:click={() => {
@@ -67,10 +67,10 @@
 				class="bg-theme-600 hover:bg-theme-500 text-theme-foreground">Login</Button
 			>
 			<LoginDialog bind:open={loginDialogOpen} />
-		{/if} -->
+		{/if}
 
-		<!-- {#if $page.data.session && $page.data.session.user}
+		{#if $page.data.session && $page.data.session.user}
 			<AccountDropdown bind:open={accountDropdownOpen} />
-		{/if} -->
+		{/if}
 	</div>
 </div>
