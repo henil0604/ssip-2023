@@ -396,7 +396,7 @@ Metadata (This list/info must NOT affect your response in any ways)
 - Target Language: ${input.targetLanguage} (do NOT respond in this language, only respond in ENGLISH)
 
 Instructions:
-- You will always respond in English
+- You will always respond in English regardless of what user says
 ${input.targetLanguage !== 'en' ? `- if the user asked about programming code in the response only and only then say the user that currently rendering programming code in other social languages is not supported and also does not make any sense.` : ''}
 					`
 				},
