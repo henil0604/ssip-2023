@@ -40,7 +40,9 @@ const authHandler = SvelteKitAuth({
 
 			return session;
 		}
-	}
+	},
+	trustHost: true,
+	useSecureCookies: true
 });
 
 export default authHandler;
