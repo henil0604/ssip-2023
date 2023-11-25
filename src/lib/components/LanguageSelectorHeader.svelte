@@ -60,6 +60,7 @@
 			<LanguageSelector
 				bind:this={sourceLanguageSelectorComponent}
 				bind:value={$sourceLanguageStore}
+				alwaysVisibleLanguages={['English', 'Hindi', 'Gujarati']}
 			/>
 		</div>
 		<!-- middle -->
@@ -75,6 +76,7 @@
 			<LanguageSelector
 				bind:this={targetLanguageSelectorComponent}
 				bind:value={$targetLanguageStore}
+				alwaysVisibleLanguages={['English', 'Hindi', 'Gujarati']}
 				className="flex-row-reverse"
 			/>
 		</div>
