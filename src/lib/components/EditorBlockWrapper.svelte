@@ -1,8 +1,5 @@
 <script lang="ts">
-	import CopyButton from '$lib/components/CopyButton.svelte';
-	import DownloadButton from '$lib/components/DownloadButton.svelte';
 	import Editor from '$lib/components/Editor.svelte';
-	import TextToSpeechButton from '$lib/components/TextToSpeechButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { DEFAULT_EDITOR_HEIGHT } from '$lib/const';
 	import Icon from '@iconify/svelte';
@@ -13,14 +10,15 @@
 	export let editor: Editor | null = null;
 	export let readonly = true;
 	export let allowEditButton = false;
+	export let wrapperClass = '';
 </script>
 
-<div class="w-full grow-0 min-h-fit flex flex-col gap-0 border border-gray-400 rounded">
+<div class="min-w-full grow-0 min-h-fit flex flex-col gap-0 border border-gray-400 rounded">
 	<Editor
 		bind:defaultHeight
 		id="originalOutput"
 		bind:readonly
-		wrapperClass=""
+		bind:wrapperClass
 		bind:this={editor}
 		bind:value
 		bind:height

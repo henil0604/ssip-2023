@@ -20,6 +20,7 @@
 	let DEFAULT_QUESTION_GENERATOR_HEIGHT = 300;
 	let input = writable('');
 	let output = writable('');
+	let customPrompt = '';
 	let editorRefs = writable<{
 		input: Editor | null;
 		output: Editor | null;
@@ -52,7 +53,8 @@
 		const questionsOutput = await trpc().generateQuestions.mutate({
 			text: $input,
 			difficultyLevel: $options.difficultyLevel,
-			format: $options.format
+			format: $options.format,
+			customPrompt: customPrompt.trim() === '' ? undefined : customPrompt
 		});
 
 		console.log('questionsOutput?', questionsOutput);
@@ -121,6 +123,14 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<div class="min-w-full">
+		<EditorBlockWrapper bind:value={customPrompt} defaultHeight={60} readonly={false}>
+			<div slot="placeholder">
+				<h1 class="text-xl">Enter custom prompt to make questions more personalized...</h1>
+			</div>
+		</EditorBlockWrapper>
 	</div>
 
 	<div class="mt-3" />

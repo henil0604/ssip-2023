@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { LanguageMap, ResponseCodeMap } from '.';
+import { Domains, LanguageMap, ResponseCodeMap } from '.';
 
 export const translate = {
 	input: z.object({

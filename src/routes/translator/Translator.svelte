@@ -8,7 +8,7 @@
 	import TextToSpeechButton from '$lib/components/TextToSpeechButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Switch } from '$lib/components/ui/switch';
-	import { DEFAULT_EDITOR_HEIGHT, type LanguagesInCodeKeys } from '$lib/const';
+	import { DEFAULT_EDITOR_HEIGHT, Domains, type LanguagesInCodeKeys } from '$lib/const';
 	import { trpc } from '$lib/trpc/client';
 	import Icon from '@iconify/svelte';
 	import { debounce } from 'lodash-es';
@@ -26,10 +26,16 @@
 	let targetLanguage = writable<LanguagesInCodeKeys>('gu');
 	let isBeingTranslated = false;
 	let abortController: AbortController | null = null;
-	let options = writable({
+	let options = writable<{
+		pureGujarati: boolean;
+		autoSummarize: boolean;
+		autoBulletins: boolean;
+		domain: (typeof Domains)[number];
+	}>({
 		pureGujarati: false,
 		autoSummarize: false,
-		autoBulletins: false
+		autoBulletins: false,
+		domain: 'General'
 	});
 	let output = writable<{
 		original: string;
@@ -253,6 +259,26 @@
 							on:click={() => ($options.pureGujarati = true)}
 							size="sm">Pure</Button
 						>
+					</div>
+				</div>
+
+				<div class="my-3" />
+
+				<!-- domain -->
+				<div class="flex justify-between items-center">
+					<h1 class="font-semibold">Domain</h1>
+					<div class="flex gap-0 border border-gray-600 rounded overflow-hidden">
+						{#each Domains as domain}
+							<Button
+								variant="ghost"
+								class="w-[100px] border-x h-fit rounded-none text-base flex-grow py-2 {$options.domain ===
+								domain
+									? 'bg-theme-600 text-white hover:bg-theme-600 hover:text-white dark:bg-background dark:border-none'
+									: 'bg-white hover:bg-white dark:border-none dark:hover:bg-zinc-600'}"
+								on:click={() => ($options.domain = domain)}
+								size="sm">{domain}</Button
+							>
+						{/each}
 					</div>
 				</div>
 

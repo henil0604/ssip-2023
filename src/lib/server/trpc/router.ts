@@ -8,7 +8,6 @@ import { map, string, z } from 'zod';
 import { toFile } from 'openai';
 import type OpenAI from 'openai';
 import { compile, escapeSvelte } from 'mdsvex';
-import input from 'postcss/lib/input';
 
 export const router = t.router({
 	translate: publicProcedure
@@ -365,9 +364,11 @@ export const router = t.router({
 	generateQuestions: publicProcedure.input(z.object({
 		text: z.string(),
 		difficultyLevel: z.enum(QuestionGeneratorDifficultyLevels),
-		format: z.enum(QuestionGeneratorFormats)
+		format: z.enum(QuestionGeneratorFormats),
+		customPrompt: z.string().optional(),
 	})).mutation(async ({ ctx, input }) => {
-		const questions = await OpenAPI.GenerateQuestions(input.text, input.difficultyLevel, input.format);
+		console.log("input?", input);
+		const questions = await OpenAPI.GenerateQuestions(input.text, input.difficultyLevel, input.format, input.customPrompt);
 		return questions || '';
 	}),
 

@@ -126,3 +126,5 @@ export const GoogleLanguageCodeToInternationalLanguageCode = {
 
 export let QuestionGeneratorDifficultyLevels = ['Easy', 'Medium', 'Hard'] as const;
 export let QuestionGeneratorFormats = ['Short Questions', 'Long Questions', 'MCQs', 'True/False', 'Fill the Blanks'] as const;
+
+export let Domains = ['General', "Math", "Physics"] as const;

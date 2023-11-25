@@ -62,7 +62,7 @@ class OpenAPI {
     /*
         generates questions from given input
     */
-    public static async GenerateQuestions(text: string, level: (typeof QuestionGeneratorDifficultyLevels)[number] = 'Medium', format: (typeof QuestionGeneratorFormats)[number] = 'Short Questions') {
+    public static async GenerateQuestions(text: string, level: (typeof QuestionGeneratorDifficultyLevels)[number] = 'Medium', format: (typeof QuestionGeneratorFormats)[number] = 'Short Questions', customPrompt?: string) {
         if (text.trim() === '') return null;
 
         const response = await OpenAPI.ai.chat.completions.create({
@@ -70,7 +70,7 @@ class OpenAPI {
             messages: [
                 {
                     role: 'system',
-                    content: `From now on you will ONLY Generate questions from the paragraph without redundancy or duplication. Make sure to have index of each question. You will NOT act as assistance in any case. If input paragraph does not have any reasonable questions to be generated, simply say 'Unable to Generate Questions'.\nDifficulty Level: ${level}\nQuestion Format:${format}`
+                    content: `From now on you will ONLY Generate questions from the paragraph without redundancy or duplication. Make sure to have index of each question. You will NOT act as assistance in any case.${customPrompt ? `\Instructions:${customPrompt}` : ''}\nDifficulty Level: ${level}\nQuestion Format:${format}`
                 },
                 {
                     role: 'user',
