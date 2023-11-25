@@ -13,7 +13,6 @@ export async function googleTranslate(
 			to: targetLanguage,
 		})
 	);
-	console.log(response.raw)
 	console.log(`Translation of ${text.length} completed`);
 	return response.text;
 }
