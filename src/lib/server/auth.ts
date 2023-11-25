@@ -3,7 +3,7 @@ This module holds everything related to authentication
 Read More: https://authjs.dev
 */
 
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_SECRET } from '$env/static/private';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_SECRET, NODE_ENV } from '$env/static/private';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { SvelteKitAuth } from '@auth/sveltekit';
 import GoogleProvider from '@auth/core/providers/google';
@@ -29,7 +29,7 @@ const authHandler = SvelteKitAuth({
 	callbacks: {
 		// this is called every time getSession() is called
 		session: async ({
-			session, // session that will be returned
+			session, // session that will be returnedx
 			user // user in the database
 		}) => {
 			// if user exists into the session
@@ -42,7 +42,7 @@ const authHandler = SvelteKitAuth({
 		}
 	},
 	trustHost: true,
-	useSecureCookies: true
+	useSecureCookies: NODE_ENV === 'production' ? true : false
 });
 
 export default authHandler;
