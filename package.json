@@ -13,7 +13,7 @@
     "prepare": "npm run db:generate",
     "db:generate": "npx prisma generate",
     "db:push": "npx prisma db push",
-    "start": "vite preview --host --port 3001"
+    "start": "NODE_ENV=production vite preview --host --port 3001"
   },
   "devDependencies": {
     "@auth/prisma-adapter": "^1.0.1",
