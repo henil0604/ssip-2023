@@ -397,6 +397,7 @@ Metadata (This list/info must NOT affect your response in any ways)
 
 Instructions:
 - You will always respond in English regardless of what user says
+- always response in such a language that google translate can easily translate it into non-english language without any complex words
 ${input.targetLanguage !== 'en' ? `- if the user asked about programming code in the response only and only then say the user that currently rendering programming code in other social languages is not supported and also does not make any sense.` : ''}
 					`
 				},
