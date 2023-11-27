@@ -34,7 +34,7 @@
 	function hide() {
 		setTimeout(() => {
 			show = false;
-		}, 1500);
+		}, 700);
 	}
 
 	// responsible for doing RPC for feedback
@@ -56,6 +56,15 @@
 		hasNegativeReviewSubmitted = true;
 		hide();
 	}
+
+	$: if (refId) {
+		show = true;
+		answer = null;
+		isTranslationError = false;
+		isGrammarError = false;
+		isSpellingError = false;
+		hasNegativeReviewSubmitted = false;
+	}
 </script>
 
 {#if show && refId}
@@ -69,32 +78,29 @@
 		>
 			<Card.Content class="py-3">
 				{#if !answer}
-					<h1 class="font-semibold">What do you think about this result?</h1>
-				{/if}
-
-				{#if !answer}
-					<div class="grid grid-cols-2 w-full my-2 gap-2">
-						<Button
-							variant="outline"
-							class="text-green-800 border-green-800 gap-2 hover:bg-green-100 dark:hover:bg-green-700"
-							on:click={() => {
-								setAnswer('positive');
-								handleSubmit();
-							}}
-						>
-							<Icon icon="octicon:thumbsup-16" />
-							Good
-						</Button>
-						<Button
-							variant="outline"
-							on:click={() => {
-								setAnswer('negative');
-							}}
-							class="text-red-800 border-red-800 gap-2 hover:bg-red-100 dark:hover:bg-red-700"
-						>
-							<Icon icon="octicon:thumbsdown-16" />
-							Bad
-						</Button>
+					<div class="flex justify-between items-center">
+						<h1 class="font-semibold">What do you think about this result?</h1>
+						<div class="grid grid-cols-2 w-fit my-2">
+							<Button
+								variant="outline"
+								class="px-7 text-green-800 border-green-800 gap-2 hover:bg-green-100 rounded-none rounded-tl-full rounded-bl-full border-r-black dark:border-r-gray-700 dark:hover:bg-green-700"
+								on:click={() => {
+									setAnswer('positive');
+									handleSubmit();
+								}}
+							>
+								<Icon icon="octicon:thumbsup-16" />
+							</Button>
+							<Button
+								variant="outline"
+								on:click={() => {
+									setAnswer('negative');
+								}}
+								class="px-7 text-red-800 border-red-800 gap-2 hover:bg-red-100 rounded-none rounded-tr-full rounded-br-full border-l-0 dark:hover:bg-red-700"
+							>
+								<Icon icon="octicon:thumbsdown-16" />
+							</Button>
+						</div>
 					</div>
 				{/if}
 
@@ -155,7 +161,11 @@
 						</div>
 
 						<div class="w-full flex justify-end">
-							<Button on:click={handleSubmit} size="sm" class="rounded-full">Submit</Button>
+							<Button
+								on:click={handleSubmit}
+								size="sm"
+								class="rounded-full bg-theme-600 text-white hover:bg-theme-500">Submit</Button
+							>
 						</div>
 					</div>
 				{/if}

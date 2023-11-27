@@ -1,3 +1,5 @@
+import type pdfJs from 'pdfjs-dist'
+
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {
@@ -7,17 +9,20 @@ declare global {
 		// interface PageData {}
 		// interface Platform {}
 	}
+	interface Window {
+		pdfjsLib: pdfJs
+	}
 }
 
-export declare module "@auth/core/types" {
+export declare module '@auth/core/types' {
 	// User coming from database
 	interface User {
-		id?: string
+		id?: string;
 	}
 	interface Session {
 		// user that will be set to session
 		user: {
-			id?: string
+			id?: string;
 		} & DefaultSession['user'];
 	}
 }

@@ -10,17 +10,84 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Auth
+model Account {
+  id                String  @id @default(cuid()) @map("_id")
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid()) @map("_id")
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id              String           @id @default(cuid()) @map("_id")
+  email           String?          @unique
+  username        String?          @unique
+  emailVerified   DateTime?
+  image           String?
+  name            String?
+  // add extra user properties here...
+  // eg. gender, bio...
+  accounts        Account[]
+  sessions        Session[]
+  customReplacers CustomReplacer[]
+  histories       History[]
+  Bookmark        Bookmark[]
+}
+
+model CustomReplacer {
+  id       String  @id @default(cuid()) @map("_id")
+  user     User?   @relation(fields: [userId], references: [id])
+  userId   String?
+  language String
+  map      Json
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid()) @map("_id")
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model History {
   id String @id @default(cuid()) @map("_id")
 
-  input  String
-  output String
+  input                 String
+  originalTranslation   String
+  summarizedTranslation String?
+  bulletinedTranslation String?
 
-  type HistoryType @default(TRANSLTION)
+  type HistoryType @default(TRANSLATION)
 
   createdAt DateTime @default(now())
 
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
   feedbacks Feedback[]
+  bookmarks Bookmark[]
 }
 
 model Feedback {
@@ -39,7 +106,23 @@ model Feedback {
 }
 
 enum HistoryType {
-  TRANSLTION
+  TRANSLATION
   QUESTION_GENERATOR
   SOLUTION_GENERATOR
+}
+
+model Bookmark {
+  id             String @id @default(cuid()) @map("_id")
+  sourceLanguage String
+  targetLanguage String
+  input          String
+  output         String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  history   History @relation(fields: [historyId], references: [id])
+  historyId String
+
+  createdAt DateTime @default(now())
 }

@@ -1,16 +1,13 @@
 <script>
 	import { page } from '$app/stores';
-	import { Button } from '$lib/components/ui/button';
-	import Icon from '@iconify/svelte';
-	import '../app.postcss';
-	import { getTheme, setTheme } from '$lib/utils';
-	import Logo from '$lib/components/Logo.svelte';
-	import 'tippy.js/dist/tippy.css';
 	import { onMount } from 'svelte';
+	import '../app.postcss';
+	import Header from './Header.svelte';
+	import 'tippy.js/dist/tippy.css';
 	import { tesseractWorker } from '$lib/store';
 	import { createWorker } from 'tesseract.js';
-
-	let theme = getTheme();
+	import { ToastContainer, FlatToast } from 'svelte-toasts';
+	import { browser } from '$app/environment';
 
 	onMount(async () => {
 		console.log('creating tesseract worker...');
@@ -19,55 +16,30 @@
 	});
 </script>
 
-<div class="w-full h-fit px-5 py-3 flex">
-	<!-- head -->
-	<div>
-		<Logo />
-	</div>
+<svelte:head>
+	<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.6.172/build/pdf.min.js"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link href="/prism.css" />
+	<script src="/prism.js" defer></script>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@300;400&display=swap"
+		rel="stylesheet"
+	/>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@300;400&family=Poppins&display=swap"
+		rel="stylesheet"
+	/>
+</svelte:head>
 
-	<!-- body -->
-	<div class="flex-grow">
-		<!--  -->
-	</div>
+{#if browser}
+	<ToastContainer placement="bottom-right" let:data>
+		<FlatToast {data} />
+		<!-- Provider template for your toasts -->
+	</ToastContainer>
+{/if}
 
-	<!-- tail -->
-	<div class="max-md:hidden">
-		<Button variant="link" href="/" class={$page.url.pathname === '/' ? 'text-orange-600' : ''}
-			>Translator</Button
-		>
-
-		<Button
-			variant="link"
-			href="/question-generator"
-			class={$page.url.pathname === '/question-generator' ? 'text-orange-600' : ''}
-			>Question Generator</Button
-		>
-
-		<Button
-			variant="link"
-			href="/solution-generator"
-			class={$page.url.pathname === '/solution-generator' ? 'text-orange-600' : ''}
-			>Solution Generator</Button
-		>
-
-		<Button
-			class="h-fit py-2 text-lg"
-			on:click={() => {
-				theme === 'light' ? setTheme('dark') : setTheme('light');
-				theme = getTheme();
-			}}
-			size="sm"
-		>
-			{#if theme === 'light'}
-				<Icon icon="ion:moon" />
-			{:else}
-				<Icon icon="ph:sun" />
-			{/if}
-		</Button>
-	</div>
-
-	<div class="hidden max-md:block">
-		<!--  -->
-	</div>
+<div class="flex flex-col min-h-full">
+	<Header />
+	<slot />
 </div>
-<slot />

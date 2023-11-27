@@ -13,10 +13,7 @@
 			'href',
 			'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
 		);
-		downloadAnchor.setAttribute(
-			'download',
-			`varnantar-gujarati-${(Date.now() / 1000).toFixed(0)}.txt`
-		);
+		downloadAnchor.setAttribute('download', `varnantar-${(Date.now() / 1000).toFixed(0)}.txt`);
 
 		downloadAnchor.style.display = 'none';
 		document.body.appendChild(downloadAnchor);
@@ -30,11 +27,11 @@
 <div use:tippy={{ content: 'Download', placement: 'bottom' }}>
 	<Button
 		variant="ghost"
-		class="flex justify-center items-center bg-transparent opacity-60 hover:opacity-100 transition-all p-1"
+		class="w-fit h-fit rounded-full flex justify-center items-center bg-transparent opacity-90 hover:opacity-100 transition-all p-1"
 		on:click={() => {
 			downloadTxtFile(text);
 		}}
 	>
-		<Icon class="text-xl" icon="dashicons:download" />
+		<Icon class="text-2xl" icon="iconoir:download" />
 	</Button>
 </div>
