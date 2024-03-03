@@ -64,7 +64,7 @@
 		style="max-height: {maxEditorHeight == 0 ? 'auto' : `${maxEditorHeight}px`};"
 		contenteditable="plaintext-only"
 		class={cn(
-			'w-full min-h-fit break-words flex-grow outline-none px-4 py-3 pr-16 z-[2] absolute top-0 left-0 bg-transparent text-xl overflow-auto',
+			'text-black w-full min-h-fit break-words flex-grow outline-none px-4 py-3 pr-16 z-[2] absolute top-0 left-0 bg-transparent text-xl overflow-auto',
 			inputClass
 		)}
 		bind:innerText={value}
