@@ -21,6 +21,7 @@
 	import { writable } from 'svelte/store';
 	import { fly, scale } from 'svelte/transition';
 	import { Input } from '$lib/components/ui/input';
+	import tippy from 'tippy.js';
 
 	let DEFAULT_QUESTION_GENERATOR_HEIGHT = 300;
 	let input = writable('');
@@ -134,6 +135,21 @@
 		}
 
 		readingFile = false;
+	}
+
+	function getFile() {
+		var inputElement = document.createElement('input');
+		inputElement.type = 'file';
+		inputElement.style.display = 'none';
+		inputElement.style.position = 'absolute';
+		inputElement.style.top = '0';
+		inputElement.style.left = '0';
+		document.body.appendChild(inputElement);
+		inputElement.addEventListener('change', (e) => {
+			$file = inputElement.files![0];
+			inputElement.remove();
+		});
+		inputElement.click();
 	}
 
 	$: if ($file) {
@@ -302,7 +318,16 @@
 					<svelte:fragment slot="footerLeft">
 						<TextToSpeechButton bind:input={$input} />
 						<CopyButton bind:input={$input} />
-						<UploadButton bind:file />
+						<div use:tippy={{ content: 'Upload PDF', placement: 'bottom' }}>
+							<Button
+								class="w-fit font-semibold flex justify-center items-center gap-2 hover:opacity-100 transition-all"
+								on:click={() => {
+									getFile();
+								}}
+							>
+								Upload PDF
+							</Button>
+						</div>
 					</svelte:fragment>
 					<svelte:fragment slot="footerRight">
 						<Button
