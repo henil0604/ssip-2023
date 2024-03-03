@@ -8,7 +8,7 @@
 	import TextToSpeechButton from '$lib/components/TextToSpeechButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Switch } from '$lib/components/ui/switch';
-	import { DEFAULT_EDITOR_HEIGHT, Domains, type LanguagesInCodeKeys } from '$lib/const';
+	import { DEFAULT_EDITOR_HEIGHT, /* Domains , */ type LanguagesInCodeKeys } from '$lib/const';
 	import { trpc } from '$lib/trpc/client';
 	import Icon from '@iconify/svelte';
 	import { debounce } from 'lodash-es';
@@ -30,12 +30,12 @@
 		pureGujarati: boolean;
 		autoSummarize: boolean;
 		autoBulletins: boolean;
-		domain: (typeof Domains)[number];
+		// domain: (typeof Domains)[number];
 	}>({
 		pureGujarati: false,
 		autoSummarize: false,
-		autoBulletins: false,
-		domain: 'General'
+		autoBulletins: false
+		// domain: 'General'
 	});
 	let output = writable<{
 		original: string;
@@ -262,10 +262,10 @@
 					</div>
 				</div>
 
-				<div class="my-3" />
+				<!-- <div class="my-3" /> -->
 
 				<!-- domain -->
-				<div class="flex justify-between items-center">
+				<!-- <div class="flex justify-between items-center">
 					<h1 class="font-semibold">Domain</h1>
 					<div class="flex gap-0 border border-gray-600 rounded overflow-hidden">
 						{#each Domains as domain}
@@ -280,7 +280,7 @@
 							>
 						{/each}
 					</div>
-				</div>
+				</div> -->
 
 				<hr class="my-3" />
 
