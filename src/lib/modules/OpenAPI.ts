@@ -26,7 +26,7 @@ class OpenAPI {
         if (text.trim() === '') return null;
 
         const response = await OpenAPI.ai.completions.create({
-            model: 'text-davinci-003',
+            model: 'gpt-3.5-turbo-instruct',
             prompt: `Summarize text plainly, without altering details or tone. text: ${text}\nSummary:`,
             temperature: 1,
             top_p: 1,
@@ -46,7 +46,7 @@ class OpenAPI {
         if (text.trim() === '') return null;
 
         const response = await OpenAPI.ai.completions.create({
-            model: 'text-davinci-003',
+            model: 'gpt-3.5-turbo-instruct',
             prompt: `Transform the text into bullet points without altering content, tone, or omitting/adding details. start with "•". \nText: ${text}\nAnswer:`,
             temperature: 1,
             top_p: 1,
@@ -66,7 +66,7 @@ class OpenAPI {
         if (text.trim() === '') return null;
 
         const response = await OpenAPI.ai.chat.completions.create({
-            model: 'gpt-3.5-turbo-1106',
+            model: 'gpt-3.5-turbo',
             messages: [
                 {
                     role: 'system',

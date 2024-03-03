@@ -387,7 +387,7 @@ export const router = t.router({
 		console.log("message?", input.chats.at(-1)?.message)
 
 		const response = await OpenAPI.ai.chat.completions.create({
-			model: 'gpt-3.5-turbo-1106',
+			model: 'gpt-3.5-turbo',
 			messages: [
 				{
 					role: 'system',
