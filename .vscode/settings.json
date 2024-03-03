@@ -1,3 +1,6 @@
 {
-	"cSpell.words": ["trpc"]
+	"cSpell.words": [
+		"trpc"
+	],
+	"cmake.configureOnOpen": false
 }

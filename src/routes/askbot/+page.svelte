@@ -117,7 +117,7 @@
 	});
 </script>
 
-<div class="grow min-w-full max-h-[880px] flex justify-center">
+<div class="grow min-w-full max-h-[1000px] flex justify-center">
 	<div
 		style="width: 50%;"
 		class="min-h-fit flex flex-col justify-between border-x border-theme-400"

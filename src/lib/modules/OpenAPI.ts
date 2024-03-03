@@ -70,7 +70,7 @@ class OpenAPI {
             messages: [
                 {
                     role: 'system',
-                    content: `From now on you will ONLY Generate questions from the paragraph without redundancy or duplication. Make sure to have index of each question. You will NOT act as assistance in any case.${customPrompt ? `\Instructions:${customPrompt}` : ''}\nDifficulty Level: ${level}\nQuestion Format:${format}`
+                    content: `From now on you will ONLY Generate questions from the paragraph without redundancy or duplication. Make sure to have index of each question. You will NOT act as assistance in any case. ${customPrompt ? `\nInstructions:${customPrompt}` : ''}\nDifficulty Level: ${level}\nQuestion Format:${format}`
                 },
                 {
                     role: 'user',

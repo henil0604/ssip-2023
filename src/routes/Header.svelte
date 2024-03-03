@@ -33,7 +33,10 @@
 <div class="w-full bg-white h-fit px-4 py-3 shadow flex items-center justify-center z-[10]">
 	<!-- head -->
 	<div class="">
-		<a href="/">
+		<a class="hidden max-md:block" href="/">
+			<Logo size={30} />
+		</a>
+		<a class="hidden md:block" href="/">
 			<Logo size={50} />
 		</a>
 	</div>
@@ -42,7 +45,7 @@
 	<div class="flex-grow flex justify-end gap-3" />
 
 	<!-- tail -->
-	<div class="flex justify-end items-center gap-5">
+	<div class="max-md:hidden flex justify-end items-center gap-5">
 		{#each links as link}
 			{@const isActive =
 				link.href === $page.url.pathname ||

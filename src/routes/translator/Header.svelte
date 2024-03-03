@@ -39,7 +39,7 @@
 </script>
 
 <div class="w-full flex justify-between items-center">
-	<div class="flex gap-2">
+	<div class="flex gap-2 max-md:max-w-[150px] overflow-x-auto">
 		{#each modes as mode}
 			{@const isActive = mode.href === $page.url.pathname}
 			<a

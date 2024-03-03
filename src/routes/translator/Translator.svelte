@@ -208,7 +208,7 @@
 	/>
 
 	<!-- body -->
-	<div class="grid grid-cols-2 gap-7">
+	<div class="grid grid-cols-2 max-md:grid-cols-1 gap-7">
 		<!-- left -->
 		<div class="flex flex-col max-h-fit">
 			<!-- top -->
