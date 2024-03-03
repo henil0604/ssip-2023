@@ -12,7 +12,6 @@
 			icon: 'ion:text',
 			description: 'Translation for 100+ Languages'
 		},
-
 		{
 			name: 'Voice',
 			href: '/translator/voice',
@@ -24,13 +23,13 @@
 			href: '/translator/image',
 			icon: 'bx:image',
 			description: '.png, .jpg, .gif'
-		},
-		{
-			name: 'File',
-			href: '/translator/file',
-			icon: 'bx:file',
-			description: 'Translate .pdf, .txt files'
 		}
+		// {
+		// 	name: 'File',
+		// 	href: '/translator/file',
+		// 	icon: 'bx:file',
+		// 	description: 'Translate .pdf, .txt files'
+		// }
 	];
 
 	$: selectedDescription = modes.find((e) => e.href === $page.url.pathname)?.description || '';
@@ -60,8 +59,8 @@
 
 	<div class="flex gap-1">
 		{#if user}
-			<CustomReplacer />
-			<MyBookmarks />
+			<!-- <CustomReplacer /> -->
+			<!-- <MyBookmarks /> -->
 		{/if}
 	</div>
 </div>

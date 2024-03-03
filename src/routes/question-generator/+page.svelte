@@ -87,7 +87,7 @@
 
 <div class="min-w-fit min-h-fit flex flex-col py-6 px-32">
 	<!-- options -->
-	<div class="p-4 px-0 rounded grid grid-cols-2">
+	<!-- <div class="p-4 px-0 rounded grid grid-cols-2">
 		<div class="flex flex-col justify-start items-start gap-2">
 			<h1 class="font-semibold">Question Format</h1>
 			<div class="flex gap-0 border border-gray-400 rounded overflow-hidden">
@@ -104,7 +104,6 @@
 				{/each}
 			</div>
 		</div>
-		<!-- translation mode -->
 		<div class="w-full flex flex-col items-end gap-2">
 			<div class="w-fit flex flex-col gap-2">
 				<h1 class="font-semibold">Difficulty Mode</h1>
@@ -123,15 +122,15 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	</div> -->
 
-	<div class="min-w-full">
+	<!-- <div class="min-w-full">
 		<EditorBlockWrapper bind:value={customPrompt} defaultHeight={60} readonly={false}>
 			<div slot="placeholder">
 				<h1 class="text-xl">Enter custom prompt to make questions more personalized...</h1>
 			</div>
 		</EditorBlockWrapper>
-	</div>
+	</div> -->
 
 	<div class="mt-3" />
 

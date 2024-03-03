@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {
-		LanguageMap,
+		LanguageMap as OriginalLanguageMap,
 		type LanguagesInCodeKeys,
 		type LanguagesInHumanReadableKeys
 	} from '$lib/const';
@@ -9,6 +9,10 @@
 	import Icon, { iconExists } from '@iconify/svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { cn } from '$lib/utils';
+
+	export let LanguageMap: {
+		[key: string]: LanguagesInCodeKeys;
+	} = OriginalLanguageMap;
 
 	const LanguageCodes = Object.values(LanguageMap) as LanguagesInCodeKeys[];
 	const LanguageNames = Object.keys(LanguageMap) as LanguagesInHumanReadableKeys[];
