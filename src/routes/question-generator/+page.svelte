@@ -155,20 +155,96 @@
 		inputElement.click();
 	}
 
-	$: if ($file) {
+	function selectFormat(format: (typeof QuestionGeneratorFormats)[number]) {
+		if (!$options.pdfMode || Array.isArray($options.format) === false) {
+			return;
+		}
+
+		$options.format.push(format);
+		$options.format = $options.format;
+		$markingSystem[format] = {
+			markPerQuestion: 0,
+			numberOfQuestions: 0
+		};
+	}
+
+	function unSelectFormat(format: (typeof QuestionGeneratorFormats)[number]) {
+		if (!$options.pdfMode || Array.isArray($options.format) === false) {
+			return;
+		}
+
+		if ($options.format.length <= 1) {
+			return;
+		}
+		delete $markingSystem[format];
+		$options.format = $options.format.filter((f) => f !== format);
+	}
+
+	$: if ($file && !$options.pdfMode) {
 		$options.pdfMode = true;
-		(async () => {
-			console.log(QuestionGeneratorFormats);
-			for (let i = 0; i < QuestionGeneratorFormats.length; i++) {
-				const f = QuestionGeneratorFormats[i];
-				const prev = $options.format.slice(1) as (typeof QuestionGeneratorFormats)[number][];
+		$options.format = [];
+		selectFormat('Short Questions');
+		selectFormat('True/False');
+		handleFile($file);
+	}
 
-				$options.format = [...prev, f];
+	async function handleGenerate() {
+		if ($input.trim() === '') {
+			toasts.add({
+				title: 'Oops!',
+				description: 'Input is empty',
+				duration: 3000,
+				type: 'error',
+				theme: 'dark'
+			});
+			return;
+		}
 
-				await new Promise((resolve) => setTimeout(resolve, 200));
+		const markingSystemAsArray = Object.keys($markingSystem).map((format) => {
+			return {
+				section: format as (typeof QuestionGeneratorFormats)[number],
+				markPerQuestion: parseInt($markingSystem[format].markPerQuestion.toString()),
+				numberOfQuestions: parseInt($markingSystem[format].numberOfQuestions.toString())
+			};
+		});
+
+		const invalidSectionInMarkingSystem = markingSystemAsArray.find((element) => {
+			if (element.markPerQuestion === 0 || element.numberOfQuestions === 0) {
+				return true;
 			}
-			$options.format = ['Short Questions', 'True/False'];
-		})();
+		});
+
+		if (invalidSectionInMarkingSystem) {
+			toasts.add({
+				title: 'Oops!',
+				description: `${invalidSectionInMarkingSystem.section} has zero values`,
+				duration: 5000,
+				type: 'error',
+				theme: 'dark'
+			});
+			return;
+		}
+
+		generating = true;
+		$output = '';
+
+		const response = await trpc().generateQuestions.mutate({
+			difficultyLevel: $options.difficultyLevel,
+			format: Array.isArray($options.format) ? $options.format : [$options.format],
+			text: $input,
+			markingSystem: markingSystemAsArray
+		});
+
+		console.log('response?', response);
+		if (response.trim() === '') {
+			$output = 'Failed to generate questions. Please try again...';
+			generating = false;
+			return;
+		}
+
+		$output = response;
+
+		generating = false;
 	}
 
 	onMount(() => {
@@ -183,6 +259,10 @@
 			clearInterval(resizerInterval);
 		}
 	});
+
+	function handleTranslate() {
+		redirectToTranslate($output, 'en', 'gu');
+	}
 </script>
 
 <div class="min-w-fit min-h-fit flex flex-col py-6 px-32">
@@ -207,20 +287,10 @@
 						on:click={() => {
 							if ($options.pdfMode && Array.isArray($options.format)) {
 								if (isActive) {
-									$options.format = $options.format.filter((e) => {
-										return e !== format;
-									});
-									delete $markingSystem[format];
+									unSelectFormat(format);
 									return;
 								}
-								$options.format = [...$options.format.values(), format];
-								$markingSystem = {
-									...$markingSystem,
-									[format]: {
-										markPerQuestion: 0,
-										numberOfQuestions: 0
-									}
-								};
+								selectFormat(format);
 							} else {
 								$options.format = format;
 							}
@@ -255,11 +325,11 @@
 		<div class="flex flex-col w-full h-fit border border-gray-400 rounded p-2 px-4">
 			<Accordion.Root>
 				{#each $options.format as format, index}
-					<Accordion.Item value={format} data-state="open">
+					<Accordion.Item value={format}>
 						<Accordion.Trigger>
-							<div class="">
-								<span class="font-semibold">Section {index + 1}: </span>
-								<span>{format}</span>
+							<div class="flex gap-1">
+								<p class="font-semibold">Section {index + 1}:</p>
+								<p>{format}</p>
 							</div>
 						</Accordion.Trigger>
 						<Accordion.Content>
@@ -340,20 +410,38 @@
 					<svelte:fragment slot="footerLeft">
 						<TextToSpeechButton bind:input={$input} />
 						<CopyButton bind:input={$input} />
-						<div>
-							<Button
-								class="w-fit font-semibold flex justify-center items-center gap-2 hover:opacity-100 transition-all"
-								on:click={() => {
-									getFile();
-								}}
-							>
-								Upload PDF
-							</Button>
-						</div>
+						{#if $options.pdfMode === false}
+							<div>
+								<Button
+									class="w-fit font-semibold flex justify-center items-center gap-2 hover:opacity-100 transition-all"
+									on:click={() => {
+										getFile();
+									}}
+								>
+									Upload PDF
+								</Button>
+							</div>
+						{:else}
+							<div>
+								<Button
+									variant="destructive"
+									class="w-fit font-semibold flex justify-center items-center gap-2"
+									on:click={() => {
+										$options.pdfMode = false;
+										$options.format = 'Short Questions';
+										$input = '';
+										$file = null;
+									}}
+								>
+									Exit PDF Mode
+								</Button>
+							</div>
+						{/if}
 					</svelte:fragment>
 					<svelte:fragment slot="footerRight">
 						<Button
 							bind:disabled={generating}
+							on:click={handleGenerate}
 							class="gap-2 font-semibold transition-all {generating ? 'rounded-full p-3' : ''}"
 						>
 							{#if !generating}
@@ -386,6 +474,7 @@
 				<svelte:fragment slot="footerRight">
 					<Button
 						bind:disabled={isTranslateButtonDisabled}
+						on:click={handleTranslate}
 						class="gap-2 font-semibold transition-all [&>.icon]:hover:animate-[back-and-forth-from-left-to-right_0.5s_ease-in-out_infinite]"
 					>
 						Translate <Icon class="text-lg icon" icon="gg:arrow-right" />
