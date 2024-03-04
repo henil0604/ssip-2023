@@ -130,14 +130,7 @@
 				<Icon class="text-[40px] text-black" icon="fluent:bot-sparkle-20-regular" />
 				<h1 class="font-semibold text-xl"><span class="text-theme-600">Ask</span>Bot</h1>
 			</div>
-			<LanguageSelector
-				LanguageMap={Object.freeze({
-					English: 'en',
-					Gujarati: 'gu'
-				})}
-				maxNumberOfAlwaysVisibleLanguages={2}
-				bind:value={$sourceLanguage}
-			/>
+			<LanguageSelector maxNumberOfAlwaysVisibleLanguages={2} bind:value={$sourceLanguage} />
 		</div>
 		<div
 			bind:this={chatBlockRef}

@@ -367,11 +367,16 @@ export const router = t.router({
 	generateQuestions: publicProcedure.input(z.object({
 		text: z.string(),
 		difficultyLevel: z.enum(QuestionGeneratorDifficultyLevels),
-		format: z.enum(QuestionGeneratorFormats),
+		format: z.array(z.enum(QuestionGeneratorFormats)),
 		customPrompt: z.string().optional(),
+		markingSystem: z.array(z.object({
+			section: z.enum(QuestionGeneratorFormats),
+			markPerQuestion: z.number().gt(0),
+			numberOfQuestions: z.number().gt(0)
+		}))
 	})).mutation(async ({ ctx, input }) => {
 		console.log("input?", input);
-		const questions = await OpenAPI.GenerateQuestions(input.text, input.difficultyLevel, input.format, input.customPrompt);
+		const questions = await OpenAPI.GenerateQuestions(input.text, input.difficultyLevel, input.format, input.markingSystem, input.customPrompt);
 		return questions || '';
 	}),
 

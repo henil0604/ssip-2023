@@ -62,19 +62,43 @@ class OpenAPI {
     /*
         generates questions from given input
     */
-    public static async GenerateQuestions(text: string, level: (typeof QuestionGeneratorDifficultyLevels)[number] = 'Medium', format: (typeof QuestionGeneratorFormats)[number] = 'Short Questions', customPrompt?: string) {
+    public static async GenerateQuestions(
+        text: string,
+        level: (typeof QuestionGeneratorDifficultyLevels)[number] = 'Medium',
+        format: (typeof QuestionGeneratorFormats[number][]) = ['Short Questions', 'True/False'],
+        markingSystem: {
+            section: typeof QuestionGeneratorFormats[number],
+            markPerQuestion: number,
+            numberOfQuestions: number
+        }[],
+        customPrompt?: string) {
         if (text.trim() === '') return null;
+
+        const INSTRUCTIONS = `You are a question generator for question paper. You will generate question paper as a teacher would set a question paper. User can give you "format" for how to generate questions. You will follow that format and maintain the order and sequence of questions. You will not try to go beyond the given format by user. You will specify total marks of each section at the start of it (in the heading of section). You will not try to specify any other things except those which are given in format by user. You will specify When a page should start with the following pattern: [PAGE 1], [PAGE 2], etc..`;
+        const PROMPT = `Format:
+${format.map((element, index) => {
+            const markingData = markingSystem.find(e => e.section === element);
+            if (!markingData) return null;
+
+            return `- Type of questions (Section name): ${element}
+\t- This section contains ${markingData.numberOfQuestions} each with ${markingData.markPerQuestion} marks`
+        }).filter(e => e !== null).join('\n')}
+
+
+Input:
+${text}
+`
 
         const response = await OpenAPI.ai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
                 {
                     role: 'system',
-                    content: `From now on you will ONLY Generate questions from the paragraph without redundancy or duplication. Make sure to have index of each question. You will NOT act as assistance in any case. ${customPrompt ? `\nInstructions:${customPrompt}` : ''}\nDifficulty Level: ${level}\nQuestion Format:${format}`
+                    content: INSTRUCTIONS
                 },
                 {
                     role: 'user',
-                    content: `${text}`
+                    content: PROMPT
                 }
             ],
             temperature: 1,
