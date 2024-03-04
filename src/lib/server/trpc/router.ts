@@ -8,6 +8,7 @@ import { map, string, z } from 'zod';
 import { toFile } from 'openai';
 import type OpenAI from 'openai';
 import { compile, escapeSvelte } from 'mdsvex';
+import type { inferRouterOutputs } from '@trpc/server';
 
 export const router = t.router({
 	translate: publicProcedure
@@ -171,6 +172,7 @@ export const router = t.router({
 		isTranslationError: z.boolean(),
 		isGrammarError: z.boolean(),
 		isSpellingError: z.boolean(),
+		otherSuggestions: z.string().optional()
 	})).query(async ({ ctx, input }) => {
 		return ctx.prisma.feedback.create({
 			data: {
@@ -178,6 +180,7 @@ export const router = t.router({
 				isSpellingError: !input.isPositive && input.isSpellingError,
 				isTranslationError: !input.isPositive && input.isTranslationError,
 				isPositive: input.isPositive,
+				otherSuggestions: input.otherSuggestions,
 				ref: {
 					connect: {
 						id: input.refId
@@ -522,8 +525,28 @@ ${input.targetLanguage !== 'en' ? `- if the user asked about programming code in
 		});
 
 		return 1;
+	}),
+
+	admin: t.router({
+
+		fetchLatestFeedbacks: privateProcedure
+			.query(async ({ ctx }) => {
+				return await ctx.prisma.feedback.findMany({
+					where: {
+						reviewedByAdmin: false
+					},
+					orderBy: {
+						createdAt: 'desc'
+					},
+					include: {
+						ref: true
+					}
+				})
+			})
+
 	})
 
 });
 
 export type Router = typeof router;
+export type RouterOutput = inferRouterOutputs<Router>;

@@ -336,7 +336,7 @@
 					<DownloadButton bind:text={$output.original} />
 					<TextToSpeechButton bind:input={$output.original} />
 					<CopyButton bind:input={$output.original} />
-					<!-- {#if user && $output.original?.trim() !== '' && $input.trim() !== ''}
+					{#if user && $output.original?.trim() !== '' && $input.trim() !== ''}
 						<BookMarkButton
 							bind:input={$input}
 							bind:output={$output.original}
@@ -344,7 +344,7 @@
 							bind:targetLanguage={$targetLanguage}
 							bind:historyId={$referenceId}
 						/>
-					{/if} -->
+					{/if}
 				</svelte:fragment>
 			</EditorBlockWrapper>
 

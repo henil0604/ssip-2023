@@ -101,6 +101,9 @@ model Feedback {
   isGrammarError     Boolean
   isSpellingError    Boolean
   isTranslationError Boolean
+  otherSuggestions   String?
+
+  reviewedByAdmin Boolean @default(false)
 
   createdAt DateTime @default(now())
 }

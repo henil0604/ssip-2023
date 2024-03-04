@@ -59,8 +59,8 @@
 
 	<div class="flex gap-1">
 		{#if user}
-			<!-- <CustomReplacer /> -->
-			<!-- <MyBookmarks /> -->
+			<CustomReplacer />
+			<MyBookmarks />
 		{/if}
 	</div>
 </div>

@@ -6,6 +6,7 @@
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
 	import { trpc } from '$lib/trpc/client';
+	import { Input } from './ui/input';
 
 	export let refId: string;
 
@@ -20,6 +21,7 @@
 	let isGrammarError = false;
 	let isSpellingError = false;
 	let hasNegativeReviewSubmitted = false;
+	let otherSuggestionsInput = '';
 
 	// responsible for setting answer
 	function setAnswer(value: Answer) {
@@ -47,7 +49,8 @@
 			isPositive: answer === 'positive',
 			isGrammarError,
 			isSpellingError,
-			isTranslationError
+			isTranslationError,
+			otherSuggestions: otherSuggestionsInput
 		});
 
 		// debugging response
@@ -158,6 +161,17 @@
 									>Inappropriate spelling/જોડણી</span
 								>
 							</Label>
+						</div>
+						<div class="my-2" />
+
+						<div class="grid w-full max-w-sm items-center gap-1.5">
+							<Label for="otherSuggestions">Other suggestions</Label>
+							<Input
+								bind:value={otherSuggestionsInput}
+								type="text"
+								id="otherSuggestions"
+								placeholder="How can we improve this result?"
+							/>
 						</div>
 
 						<div class="w-full flex justify-end">

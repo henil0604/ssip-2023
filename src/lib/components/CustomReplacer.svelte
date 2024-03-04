@@ -32,6 +32,7 @@
 			language: $selectedLanguage
 		});
 
+		// @ts-ignore
 		map = customReplacerResponse.map as Record<string, string>;
 
 		if (touchLoading) {
@@ -77,7 +78,6 @@
 		loadingStatus = 'Delete';
 
 		delete map[key];
-		// map = JSON.parse(JSON.stringify(map));
 		map = map;
 
 		await trpc().deleteInCustomReplacer.query({
