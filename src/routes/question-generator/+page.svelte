@@ -21,7 +21,7 @@
 	import { writable } from 'svelte/store';
 	import { fly, scale } from 'svelte/transition';
 	import { Input } from '$lib/components/ui/input';
-	import tippy from 'tippy.js';
+	import { isArray } from 'lodash-es';
 
 	let DEFAULT_QUESTION_GENERATOR_HEIGHT = 300;
 	let input = writable('');
@@ -41,10 +41,12 @@
 	});
 	let options = writable<{
 		difficultyLevel: (typeof QuestionGeneratorDifficultyLevels)[number];
-		formats: (typeof QuestionGeneratorFormats)[number][];
+		format: (typeof QuestionGeneratorFormats)[number][] | (typeof QuestionGeneratorFormats)[number];
+		pdfMode: boolean;
 	}>({
 		difficultyLevel: 'Medium',
-		formats: []
+		pdfMode: false,
+		format: 'Short Questions'
 	});
 	let markingSystem = writable<{
 		[key: string]: {
@@ -58,6 +60,7 @@
 	let fileProcessingStatus = 'Running';
 	let resizerInterval: NodeJS.Timeout;
 	let showFeedback = false;
+	let questionTypeSelectorWrapperElement: HTMLDivElement;
 
 	$: isTranslateButtonDisabled = $output.trim() === '' ? true : false;
 
@@ -153,7 +156,19 @@
 	}
 
 	$: if ($file) {
-		handleFile($file);
+		$options.pdfMode = true;
+		(async () => {
+			console.log(QuestionGeneratorFormats);
+			for (let i = 0; i < QuestionGeneratorFormats.length; i++) {
+				const f = QuestionGeneratorFormats[i];
+				const prev = $options.format.slice(1) as (typeof QuestionGeneratorFormats)[number][];
+
+				$options.format = [...prev, f];
+
+				await new Promise((resolve) => setTimeout(resolve, 200));
+			}
+			$options.format = ['Short Questions', 'True/False'];
+		})();
 	}
 
 	onMount(() => {
@@ -168,8 +183,6 @@
 			clearInterval(resizerInterval);
 		}
 	});
-
-	$: console.log($file);
 </script>
 
 <div class="min-w-fit min-h-fit flex flex-col py-6 px-32">
@@ -177,9 +190,14 @@
 	<div class="p-4 py-2 px-0 rounded grid grid-cols-2">
 		<div class="flex flex-col justify-start items-start gap-2">
 			<h1 class="font-semibold">Question Format</h1>
-			<div class="flex gap-0 border border-gray-400 rounded overflow-hidden">
+			<div
+				class="flex gap-0 border border-gray-400 rounded overflow-hidden"
+				bind:this={questionTypeSelectorWrapperElement}
+			>
 				{#each QuestionGeneratorFormats as format}
-					{@const isActive = $options.formats.includes(format)}
+					{@const isActive = $options.pdfMode
+						? $options.format.includes(format)
+						: $options.format === format}
 					<Button
 						data-format={format}
 						variant="ghost"
@@ -187,21 +205,25 @@
 							? 'bg-theme-600 text-white hover:bg-theme-600 hover:text-white dark:bg-background dark:border-none border-x-transparent'
 							: 'bg-white hover:bg-white dark:border-none dark:hover:bg-zinc-600'}"
 						on:click={() => {
-							if (isActive) {
-								$options.formats = $options.formats.filter((e) => {
-									return e !== format;
-								});
-								delete $markingSystem[format];
-								return;
-							}
-							$options.formats = [...$options.formats.values(), format];
-							$markingSystem = {
-								...$markingSystem,
-								[format]: {
-									markPerQuestion: 0,
-									numberOfQuestions: 0
+							if ($options.pdfMode && Array.isArray($options.format)) {
+								if (isActive) {
+									$options.format = $options.format.filter((e) => {
+										return e !== format;
+									});
+									delete $markingSystem[format];
+									return;
 								}
-							};
+								$options.format = [...$options.format.values(), format];
+								$markingSystem = {
+									...$markingSystem,
+									[format]: {
+										markPerQuestion: 0,
+										numberOfQuestions: 0
+									}
+								};
+							} else {
+								$options.format = format;
+							}
 						}}
 						size="sm">{format}</Button
 					>
@@ -229,10 +251,10 @@
 		</div>
 	</div>
 
-	{#if $options.formats.length > 0}
+	{#if $options.pdfMode && $options.format.length > 0}
 		<div class="flex flex-col w-full h-fit border border-gray-400 rounded p-2 px-4">
 			<Accordion.Root>
-				{#each $options.formats as format, index}
+				{#each $options.format as format, index}
 					<Accordion.Item value={format} data-state="open">
 						<Accordion.Trigger>
 							<div class="">
@@ -318,7 +340,7 @@
 					<svelte:fragment slot="footerLeft">
 						<TextToSpeechButton bind:input={$input} />
 						<CopyButton bind:input={$input} />
-						<div use:tippy={{ content: 'Upload PDF', placement: 'bottom' }}>
+						<div>
 							<Button
 								class="w-fit font-semibold flex justify-center items-center gap-2 hover:opacity-100 transition-all"
 								on:click={() => {
