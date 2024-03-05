@@ -161,7 +161,7 @@
 
 		$referenceId = translationResponse.data?.referenceId || null;
 
-		redirectToTranslate($input, $sourceLanguage, $targetLanguage);
+		// redirectToTranslate($input, $sourceLanguage, $targetLanguage);
 
 		isBeingTranslated = false;
 	}
