@@ -20,6 +20,18 @@ const schema = {
 	})
 };
 
+function findOccurrences(inputString: string, searchWord: string) {
+	let result = [];
+	let index = inputString.indexOf(searchWord);
+
+	while (index !== -1) {
+		result.push({ start: index, end: index + searchWord.length - 1 });
+		index = inputString.indexOf(searchWord, index + 1);
+	}
+
+	return result;
+}
+
 type PostLayerOptions = Zod.infer<(typeof schema)['input']>;
 type PostLayerOutput = Zod.infer<(typeof schema)['output']>;
 
