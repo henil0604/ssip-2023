@@ -97,6 +97,7 @@ export const router = t.router({
 				}
 			});
 			let originalTranslation = originalTranslationResponse.result
+			console.log("originalTranslationResponse?", originalTranslationResponse)
 			console.log("originalTranslation?", originalTranslation)
 
 			let summarizedTranslation: string | undefined = undefined;
@@ -161,6 +162,9 @@ export const router = t.router({
 						summarized: input.features.autoSummarize ? summarizedTranslation : undefined,
 						bulletined: input.features.autoBulletins ? bulletinedTranslation : undefined,
 						original: originalTranslation
+					},
+					changes: {
+						postReplacer: originalTranslationResponse.changes.postReplacer
 					}
 				}
 			};

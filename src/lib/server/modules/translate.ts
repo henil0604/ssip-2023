@@ -4,9 +4,9 @@ import _ from 'lodash-es';
 import natural from 'natural';
 import { googleTranslate } from './googleTranslate';
 import { preReplacerLayer } from './preLayerLayer';
-import { postReplacerLayer } from './postReplacerLayer';
+import { changesSchema, postReplacerLayer } from './postReplacerLayer';
 
-const schema = {
+export const schema = {
 	input: z.object({
 		input: z.string(),
 
@@ -26,7 +26,10 @@ const schema = {
 	}),
 
 	output: z.object({
-		result: z.string()
+		result: z.string(),
+		changes: z.object({
+			postReplacer: changesSchema
+		})
 	})
 };
 
@@ -36,11 +39,15 @@ type TranslateOutput = Zod.infer<(typeof schema)['output']>;
 export async function translate(options: TranslateOptions): Promise<TranslateOutput> {
 	if (options.input.trim() === '') {
 		return {
-			result: ''
+			result: '',
+			changes: {
+				postReplacer: []
+			}
 		};
 	}
 
 	options.input = options.input.trim();
+	let preReplacerChanges: TranslateOutput["changes"]['postReplacer'] = []
 
 	// apply pre-layer if enabled
 	if (options.layers.preReplacer) {
@@ -64,9 +71,13 @@ export async function translate(options: TranslateOptions): Promise<TranslateOut
 		});
 
 		translation = PostLayerResponse.result;
+		preReplacerChanges = PostLayerResponse.changes;
 	}
 
 	return {
-		result: translation
+		result: translation,
+		changes: {
+			postReplacer: preReplacerChanges
+		}
 	};
 }

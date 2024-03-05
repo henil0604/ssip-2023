@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { Domains, LanguageMap, ResponseCodeMap } from '.';
+import { LanguageMap, ResponseCodeMap } from '.';
+import { changesSchema } from '$lib/server/modules/postReplacerLayer';
 
 export const translate = {
 	input: z.object({
@@ -24,7 +25,10 @@ export const translate = {
 						summarized: z.string().optional(),
 						bulletined: z.string().optional(),
 						original: z.string()
-					})
+					}),
+				changes: z.object({
+					postReplacer: changesSchema.optional()
+				}).optional()
 			})
 			.optional()
 	})

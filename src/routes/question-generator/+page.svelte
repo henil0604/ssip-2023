@@ -371,16 +371,6 @@
 
 	<div class="mt-2" />
 
-	<!-- <div class="min-w-full">
-		<EditorBlockWrapper bind:value={customPrompt} defaultHeight={60} readonly={false}>
-			<div slot="placeholder">
-				<h1 class="text-xl">Enter custom prompt to make questions more personalized...</h1>
-			</div>
-		</EditorBlockWrapper>
-	</div> -->
-
-	<div class="mt-3" />
-
 	<div class="w-full grid grid-cols-2 gap-7">
 		<!-- left -->
 		<div class="grow flex flex-col max-h-fit">
