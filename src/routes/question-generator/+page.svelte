@@ -452,6 +452,19 @@
 					</svelte:fragment>
 				</EditorBlockWrapper>
 			</div>
+			<!-- 
+			<div class="mt-3" />
+
+			{#if $options.pdfMode && $file}
+				<div>
+					<embed
+						src={URL.createObjectURL($file)}
+						width="100%"
+						height="700"
+						type="application/pdf"
+					/>
+				</div>
+			{/if} -->
 		</div>
 
 		<!-- right -->

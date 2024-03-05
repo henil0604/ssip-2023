@@ -32,14 +32,14 @@
 	{#if loading}
 		<p>Loading...</p>
 	{/if}
-	<div class="flex flex-col gap-2">
+	<div class="flex flex-col gap-4">
 		{#each feedbacks as feedback}
 			{@const problem = [
 				feedback.isGrammarError,
 				feedback.isSpellingError,
 				feedback.isTranslationError
 			]}
-			<div class="w-full h-fit flex flex-col border rounded p-2">
+			<div class="w-full h-fit flex flex-col border rounded p-2 border-gray-600">
 				<div class="flex gap-2 text-sm">
 					<p>ID:</p>
 					<p>{feedback.id}</p>
@@ -91,14 +91,14 @@
 
 				<div class="my-2" />
 
-				<div class="grid grid-cols-2 gap-6">
-					<div class="flex flex-col">
+				<div class="grid grid-cols-2">
+					<div class="flex flex-col border-r border-r-gray-400 pr-3">
 						<p class="text-sm">Input:</p>
 						<div>
 							{feedback.ref.input}
 						</div>
 					</div>
-					<div class="flex flex-col">
+					<div class="flex flex-col pl-3">
 						<p class="text-sm">Translation:</p>
 						<div>
 							{feedback.ref.originalTranslation}
