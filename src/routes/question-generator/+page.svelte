@@ -452,7 +452,7 @@
 					</svelte:fragment>
 				</EditorBlockWrapper>
 			</div>
-			<!-- 
+
 			<div class="mt-3" />
 
 			{#if $options.pdfMode && $file}
@@ -464,7 +464,7 @@
 						type="application/pdf"
 					/>
 				</div>
-			{/if} -->
+			{/if}
 		</div>
 
 		<!-- right -->
