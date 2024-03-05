@@ -3,7 +3,20 @@ import Zod, { z } from 'zod';
 import _ from 'lodash-es';
 import { getDefaultPostReplacerDatabase } from '$lib/server/modules/getDefaultPostReplacerDatabase';
 
-const schema = {
+export const changesSchema = z.array(z.object({
+	from: z.string(),
+	to: z.string(),
+	old: z.object({
+		startingIndex: z.number(),
+		endIndex: z.number()
+	}),
+	new: z.object({
+		startingIndex: z.number(),
+		endIndex: z.number()
+	})
+}))
+
+export const schema = {
 	input: z.object({
 		input: z.string(),
 
@@ -14,9 +27,7 @@ const schema = {
 
 	output: z.object({
 		result: z.string(),
-		changes: z.array(z.object({
-
-		}))
+		changes: changesSchema
 	})
 };
 
@@ -41,10 +52,12 @@ export async function postReplacerLayer(options: PostLayerOptions): Promise<Post
 		...(options.databaseAddon || {})
 	};
 
+	const totalChanges: PostLayerOutput["changes"] = [];
+
 	for (const search in database) {
 		const replacement = database[search];
 		const expression = new RegExp(search, 'gi');
-		const changes = {
+		const changes: PostLayerOutput["changes"][number] = {
 			old: {
 				startingIndex: -1,
 				endIndex: -1,
@@ -79,13 +92,13 @@ export async function postReplacerLayer(options: PostLayerOptions): Promise<Post
 		}
 
 		if (isReplaceable) {
-			console.log("changes?", changes);
+			totalChanges.push(changes);
 		}
 
 	}
 
 	return {
 		result: options.input,
-		changes: []
+		changes: totalChanges
 	};
 }

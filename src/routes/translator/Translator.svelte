@@ -21,6 +21,8 @@
 	import DownloadButton from '$lib/components/DownloadButton.svelte';
 	import BookMarkButton from '$lib/components/BookmarkButton.svelte';
 	import { input } from '$lib/store';
+	import type { z } from 'zod';
+	import type { changesSchema } from '$lib/server/modules/postReplacerLayer';
 
 	let sourceLanguage = writable<LanguagesInCodeKeys>('en');
 	let targetLanguage = writable<LanguagesInCodeKeys>('gu');
@@ -41,8 +43,14 @@
 		original: string;
 		summarized?: string;
 		bulletined?: string;
+		changes: {
+			postReplacer?: z.infer<typeof changesSchema>;
+		};
 	}>({
-		original: ''
+		original: '',
+		changes: {
+			postReplacer: []
+		}
 	});
 	let editorHeights = writable({
 		input: DEFAULT_EDITOR_HEIGHT,
@@ -89,7 +97,10 @@
 		$output = {
 			original: '',
 			summarized: undefined,
-			bulletined: undefined
+			bulletined: undefined,
+			changes: {
+				postReplacer: []
+			}
 		};
 	}
 
@@ -153,11 +164,14 @@
 
 		abortController = null;
 
-		console.log('translationResponse?', translationResponse);
+		console.log('translationResponse?', translationResponse.data);
 
 		$output.original = translationResponse.data?.output.original || '';
 		$output.summarized = translationResponse.data?.output.summarized;
 		$output.bulletined = translationResponse.data?.output.bulletined;
+		$output.changes = translationResponse.data?.changes || {
+			postReplacer: []
+		};
 
 		$referenceId = translationResponse.data?.referenceId || null;
 
@@ -311,10 +325,12 @@
 
 		<!-- right -->
 		<div class="flex flex-col gap-5 max-h-fit">
+			<!-- original output -->
 			<EditorBlockWrapper
 				bind:editor={$editorRefs.originalOutput}
 				bind:height={$editorHeights.originalOutput}
 				bind:value={$output.original}
+				bind:changes={$output.changes.postReplacer}
 				allowEditButton={true}
 			>
 				<svelte:fragment slot="footerLeft">
