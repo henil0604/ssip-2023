@@ -29,6 +29,9 @@
 <div class="flex flex-col">
 	<h1 class="font-semibold">Recent feedbacks</h1>
 	<div class="my-2" />
+	{#if loading}
+		<p>Loading...</p>
+	{/if}
 	<div class="flex flex-col gap-2">
 		{#each feedbacks as feedback}
 			{@const problem = [
@@ -88,12 +91,18 @@
 
 				<div class="my-2" />
 
-				<div class="grid grid-cols-2">
-					<div>
-						{feedback.ref.input}
+				<div class="grid grid-cols-2 gap-6">
+					<div class="flex flex-col">
+						<p class="text-sm">Input:</p>
+						<div>
+							{feedback.ref.input}
+						</div>
 					</div>
 					<div class="flex flex-col">
-						{feedback.ref.originalTranslation}
+						<p class="text-sm">Translation:</p>
+						<div>
+							{feedback.ref.originalTranslation}
+						</div>
 					</div>
 				</div>
 			</div>
